@@ -133,7 +133,7 @@ int main() {
 
     tcp::acceptor acceptor(ioc, {address, port});
     for(int i = 0; i < 3; ++i){
-        std::cout << "Start waiting request...\n";
+        std::cout << "Server has started..."sv << std::endl;
         tcp::socket socket(ioc);
         acceptor.accept(socket);
         HandleConnection(socket, [](StringRequest&& req){ return HandleRequest(std::move(req));});
