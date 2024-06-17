@@ -26,7 +26,6 @@ void SessionBase::OnRead(beast::error_code ec, [[maybe_unused]] std::size_t byte
     if(ec){
         return ReportError(ec, "read"sv);
     }
-    std::cout << "Start request handling...\n";
     HandleRequest(std::move(request_));
 }
 

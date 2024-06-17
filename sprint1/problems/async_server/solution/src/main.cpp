@@ -38,9 +38,28 @@ StringResponse MakeStringResponse(http::status status, std::string_view body, un
 }
 
 StringResponse HandleRequest(StringRequest&& req) {
-    // Подставьте сюда код из синхронной версии HTTP-сервера
-    return MakeStringResponse(http::status::ok, "OK"sv, req.version(), req.keep_alive());
-}
+    const auto text_response = [&req](http::status status, std::string_view text) {
+        return MakeStringResponse(status, text, req.version(), req.keep_alive());
+    };
+
+    // Здесь можно обработать запрос и сформировать ответ, но пока всегда отвечаем: Hello
+    const std::string_view head_str{"HEAD"};
+    const std::string_view get_str{"GET"};
+    const std::string_view method_str{req.method_string()};
+    if( method_str == head_str || method_str == get_str){
+        std::string body;
+        if( method_str == get_str){
+            body = "Hello, ";
+            body += req.target().substr(1);
+        }
+        return text_response(http::status::ok, body);
+    } else {
+        auto response = text_response(http::status::method_not_allowed, "Invalid method"sv);
+        response.set("Allow"sv, "GET, HEAD"sv);
+        response.set(http::field::content_type, "text/html"sv);
+        return response;
+    }
+} 
 
 // Запускает функцию fn на n потоках, включая текущий
 template <typename Fn>
@@ -73,7 +92,7 @@ int main() {
     const auto address = net::ip::make_address("0.0.0.0");
     constexpr net::ip::port_type port = 8080;
     http_server::ServeHttp(ioc, {address, port}, [](auto&& req, auto&& sender) {
-        // sender(HandleRequest(std::forward<decltype(req)>(req)));
+        sender(HandleRequest(std::forward<decltype(req)>(req)));
     });
 
     // Эта надпись сообщает тестам о том, что сервер запущен и готов обрабатывать запросы
