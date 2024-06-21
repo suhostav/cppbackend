@@ -57,7 +57,6 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
         }
         game.AddMap(map);
     }
-    std::cout << game;
     return game;
 }
 

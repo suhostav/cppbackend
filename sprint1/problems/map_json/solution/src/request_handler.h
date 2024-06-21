@@ -34,7 +34,6 @@ public:
                 const std::string map_request{"/api/v1/maps/"};
                 const std::string bad_api_request{"/api/"};
                 std::string target{req.target()};
-                std::cout << target << std::endl;
                 if(target == maps_list_request){
                     body = MapsListResponse();
                     response =  text_response(http::status::ok, body, ContentType::APPLICATION_JSON);
