@@ -143,7 +143,7 @@ public:
         std::stringstream ss;
         ss << "{ ";
         ss << "\"id\": \"" << *id_ 
-           << ", \"x\": " << position_.x
+           << "\", \"x\": " << position_.x
            << ", \"y\": " << position_.y
            << ", \"offsetX\": " << offset_.dx
            << ", \"offsetY\": " << offset_.dy
@@ -203,35 +203,35 @@ public:
         using namespace std::literals;
         std::stringstream ss;
         ss << "{\n";
-        ss << "\t\"id\": " << *id_ << ",\n";
-        ss << "\t\"name\": " << name_ << ",\n";
-        ss << "\t\"roads\": ["s;
+        ss << "  \"id\": \"" << *id_ << "\",\n";
+        ss << "  \"name\": \"" << name_ << "\",\n";
+        ss << "  \"roads\": ["s;
         auto roads = GetRoads();
         bool first = true;
         for(auto road : roads){
             if(first){ first = false; } else { ss << ','; }
-            ss << "\n\t\t";
+            ss << "\n    ";
             ss << road.ToJson();
         }
-        ss << "\n\t],\n";
+        ss << "\n  ],\n";
         auto buildings = GetBuildings();
-        ss << "\t\"buildings\": ["s;
+        ss << "  \"buildings\": ["s;
         first = true;
         for(auto building : buildings){
             if(first){ first = false; } else { ss << ','; }
-            ss << "\n\t\t";
+            ss << "\n    ";
             ss << building.ToJson();
         }
-        ss << "\n\t],";
+        ss << "\n  ],";
         auto offices = GetOffices();
-        ss << "\n\t\"offices\": ["s;
+        ss << "\n  \"offices\": ["s;
         first = true;
         for(auto office : offices){
             if(first){ first = false; } else { ss << ','; }
-            ss << "\n\t\t";
+            ss << "\n    ";
             ss << office.ToJson();
         }
-        ss << "\n\t]";
+        ss << "\n  ]";
         ss << "\n}";
         return ss.str();
     }

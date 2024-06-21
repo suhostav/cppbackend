@@ -86,9 +86,9 @@ private:
                 body += ',';
             }
             body += '{';
-            body += "\"";
+            body += "\"id\": \"";
             body += *map.GetId();
-            body += "\": \"";
+            body += "\", \"name\": \"";
             body += map.GetName();
             body += "\"}";
         }
@@ -104,8 +104,8 @@ private:
             body = map_ptr->ToJson();
         } else {
             body += "{\n";
-            body += "\t\"code\": \"mapNotFound\",\n";
-            body += "\t\"message\": \"Map not found\"";
+            body += "  \"code\": \"mapNotFound\",\n";
+            body += "  \"message\": \"Map not found\"";
             body += "\n}";
         }
         return body;
@@ -113,8 +113,8 @@ private:
 
     std::string BadRequest(){
         std::string body{"{\n"};
-        body += "\t\"code\": \"badRequest\",\n";
-        body += "\t\"message\": \"Bad request\"";
+        body += "  \"code\": \"badRequest\",\n";
+        body += "  \"message\": \"Bad request\"";
         body += "\n}";
         return body;
     }
