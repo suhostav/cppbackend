@@ -1,5 +1,4 @@
 #pragma once
-#include <format>
 #include "http_server.h"
 #include "model.h"
 
@@ -87,8 +86,11 @@ private:
                 body += ',';
             }
             body += '{';
-            body += std::format("\"{}\": \"{}\"", *map.GetId(), map.GetName());
-            body += "}";
+            body += "\"";
+            body += *map.GetId();
+            body += "\": \"";
+            body += map.GetName();
+            body += "\"}";
         }
         body += "]";
         return body;
