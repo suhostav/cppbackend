@@ -68,22 +68,6 @@ public:
         return end_;
     }
 
-    std::string ToJson() const{
-        std::stringstream ss;
-        ss << "{ ";
-        if(IsHorizontal()){
-            ss << "\"x0\": "<< start_.x
-               << ", \"y0\": " << start_.y
-               << ", \"x1\": " << end_.x;
-        } else {
-            ss << "\"x0\": "<< start_.x
-               << ", \"y0\": " << start_.y
-               << ", \"y1\": " << end_.y;
-        }
-        ss << " }";
-        return ss.str();
-    }
-
 private:
     bool IsHorizontal(){
         return start_.y == end_.y;
@@ -100,17 +84,6 @@ public:
 
     const Rectangle& GetBounds() const noexcept {
         return bounds_;
-    }
-
-    std::string ToJson() const{
-        std::stringstream ss;
-        ss << "{ ";
-        ss << "\"x\": " << bounds_.position.x
-           << ", \"y\": " << bounds_.position.y
-           << ", \"w\": " << bounds_.size.width
-           << ", \"h\": " << bounds_.size.height
-           << " }";
-        return ss.str();      
     }
 
 private:
@@ -137,18 +110,6 @@ public:
 
     Offset GetOffset() const noexcept {
         return offset_;
-    }
-
-    std::string ToJson(){
-        std::stringstream ss;
-        ss << "{ ";
-        ss << "\"id\": \"" << *id_ 
-           << "\", \"x\": " << position_.x
-           << ", \"y\": " << position_.y
-           << ", \"offsetX\": " << offset_.dx
-           << ", \"offsetY\": " << offset_.dy
-           << " }";
-        return ss.str();
     }
 
 private:
@@ -198,43 +159,6 @@ public:
     }
 
     void AddOffice(Office office);
-
-    std::string ToJson() const{
-        using namespace std::literals;
-        std::stringstream ss;
-        ss << "{\n";
-        ss << "  \"id\": \"" << *id_ << "\",\n";
-        ss << "  \"name\": \"" << name_ << "\",\n";
-        ss << "  \"roads\": ["s;
-        auto roads = GetRoads();
-        bool first = true;
-        for(auto road : roads){
-            if(first){ first = false; } else { ss << ','; }
-            ss << "\n    ";
-            ss << road.ToJson();
-        }
-        ss << "\n  ],\n";
-        auto buildings = GetBuildings();
-        ss << "  \"buildings\": ["s;
-        first = true;
-        for(auto building : buildings){
-            if(first){ first = false; } else { ss << ','; }
-            ss << "\n    ";
-            ss << building.ToJson();
-        }
-        ss << "\n  ],";
-        auto offices = GetOffices();
-        ss << "\n  \"offices\": ["s;
-        first = true;
-        for(auto office : offices){
-            if(first){ first = false; } else { ss << ','; }
-            ss << "\n    ";
-            ss << office.ToJson();
-        }
-        ss << "\n  ]";
-        ss << "\n}";
-        return ss.str();
-    }
 
 private:
     using OfficeIdToIndex = std::unordered_map<Office::Id, size_t, util::TaggedHasher<Office::Id>>;
