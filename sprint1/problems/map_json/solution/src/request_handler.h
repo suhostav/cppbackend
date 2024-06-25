@@ -2,6 +2,7 @@
 #include "http_server.h"
 #include "model.h"
 #include <boost/json.hpp>
+#include <optional>
 
 namespace http_handler {
 namespace beast = boost::beast;
@@ -39,8 +40,13 @@ public:
                     response =  text_response(http::status::ok, body, ContentType::APPLICATION_JSON);
                 } else if(target.starts_with(map_request) && target.size() > map_request.size()){
                     std::string map_id{target.substr(map_request.size())};
-                    body = MapResponse(map_id);
-                    response =  text_response(http::status::ok, body, ContentType::APPLICATION_JSON);
+                    auto result = MapResponse(map_id);
+                    body = result.second;
+                    if(result.first == true){
+                        response =  text_response(http::status::ok, body, ContentType::APPLICATION_JSON);
+                    } else {
+                        response = text_response(http::status::not_found, body, ContentType::APPLICATION_JSON);
+                    }
                 } else if(target.starts_with(bad_api_request)){
                     body = BadRequest();
                     response = text_response(http::status::bad_request, body, ContentType::APPLICATION_JSON);
@@ -49,7 +55,6 @@ public:
         } else {
             response = text_response(http::status::method_not_allowed, "Invalid method"sv, ContentType::TEXT_HTML);
             response.set("Allow"sv, "GET, HEAD"sv);
-            response.set(http::field::content_type, "text/html"sv);
         }
         send(response);
     }
@@ -88,7 +93,7 @@ private:
         return boost::json::serialize(jbody);
     }
 
-    std::string MapResponse(const std::string& map_id){
+    std::pair<bool, std::string> MapResponse(const std::string& map_id){
         std::string body;
         model::Map::Id id{map_id};
         const model::Map* map_ptr = game_.FindMap(id);
@@ -135,13 +140,14 @@ private:
             }
             jbody["offices"] = joffices;
             body = boost::json::serialize(jbody);
+            return {true, body};
         } else {
             boost::json::object jbody;
             jbody["code"] = "mapNotFound";
             jbody["message"] = "Map not found";
             body = boost::json::serialize(jbody);
+            return {false, body};
         }
-        return body;
     }
 
     std::string BadRequest(){
