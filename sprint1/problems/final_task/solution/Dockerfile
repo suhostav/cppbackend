@@ -6,7 +6,7 @@ RUN apt update && \
       cmake \
     && \
     pip3 install conan==1.*
-
+ 
 #copy conanfile.txt and run conan install ..
 COPY conanfile.txt /app/
 RUN mkdir /app/build && cd /app/build && \
