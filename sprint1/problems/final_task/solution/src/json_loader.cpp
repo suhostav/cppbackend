@@ -91,4 +91,3 @@ std::ostream& operator<<(std::ostream& os, const model::Game& game){
     }
     return os;
 }
-
