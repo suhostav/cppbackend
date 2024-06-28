@@ -62,6 +62,7 @@ public:
     static constexpr std::string_view HEAD_STR{"HEAD"};
     static constexpr std::string_view GET_STR{"GET"};
 private:
+
     struct ContentType {
         ContentType() = delete;
         constexpr static std::string_view TEXT_HTML =   "text/html"sv;
@@ -72,90 +73,15 @@ private:
                                         unsigned http_version,
                                         bool keep_alive,
                                         std::string_view content_type = ContentType::TEXT_HTML
-                                        ){
-        StringResponse response(status, http_version);
-        response.set(http::field::content_type, content_type);
-        response.body() = body;
-        response.content_length(body.size());
-        response.keep_alive(keep_alive);
-        return response;
-    }
+                                        ) const;
+    std::string MapsListResponse();
 
-    std::string MapsListResponse(){
-        auto maps = game_.GetMaps();
-        boost::json::array jbody;
-        for(model::Map map : maps){
-            boost::json::object jmap;
-            jmap["id"] = *map.GetId();
-            jmap["name"] = map.GetName();
-            jbody.emplace_back(jmap);
-        }
-        return boost::json::serialize(jbody);
-    }
+    std::pair<bool, std::string> MapResponse(const std::string& map_id) const;
+    boost::json::array GetRoadsArray(const model::Map& map) const;
+    boost::json::array GetBuildingssArray(const model::Map& map) const;
+    boost::json::array GetOfficesArray(const model::Map& map) const;
 
-    std::pair<bool, std::string> MapResponse(const std::string& map_id){
-        std::string body;
-        model::Map::Id id{map_id};
-        const model::Map* map_ptr = game_.FindMap(id);
-        if(map_ptr) {
-            // body = map_ptr->ToJson();
-            boost::json::object jbody;
-            jbody["id"] = *map_ptr->GetId();
-            jbody["name"] = map_ptr->GetName();
-            boost::json::array jroads;
-            const auto roads = map_ptr->GetRoads();
-            for(const auto& road : roads){
-                boost::json::object jroad;
-                jroad["x0"] = road.GetStart().x;
-                jroad["y0"] = road.GetStart().y;
-                if(road.IsHorizontal()){
-                    jroad["x1"] = road.GetEnd().x;
-                } else {
-                    jroad["y1"] = road.GetEnd().y;
-                }
-                jroads.emplace_back(jroad);
-            }
-            jbody["roads"] = jroads;
-            boost::json::array jbuildings;
-            const auto buildings = map_ptr->GetBuildings();
-            for(const auto& building : buildings){
-                boost::json::object jbuilding;
-                jbuilding["x"] = building.GetBounds().position.x;
-                jbuilding["y"] = building.GetBounds().position.y;
-                jbuilding["w"] = building.GetBounds().size.width;
-                jbuilding["h"] = building.GetBounds().size.height;
-                jbuildings.emplace_back(jbuilding);              
-            }
-            jbody["buildings"] = jbuildings;
-            boost::json::array joffices;
-            const auto offices = map_ptr->GetOffices();
-            for(const auto& office : offices){
-                boost::json::object joffice;
-                joffice["id"] = *office.GetId();
-                joffice["x"] = office.GetPosition().x;
-                joffice["y"] = office.GetPosition().y;
-                joffice["offsetX"] = office.GetOffset().dx;
-                joffice["offsetY"] = office.GetOffset().dy;
-                joffices.emplace_back(joffice);
-            }
-            jbody["offices"] = joffices;
-            body = boost::json::serialize(jbody);
-            return {true, body};
-        } else {
-            boost::json::object jbody;
-            jbody["code"] = "mapNotFound";
-            jbody["message"] = "Map not found";
-            body = boost::json::serialize(jbody);
-            return {false, body};
-        }
-    }
-
-    std::string BadRequest(){
-        boost::json::object jbody;
-        jbody["code"] = "badRequest";
-        jbody["message"] = "Bad request";
-        return boost::json::serialize(jbody);
-    }
+    std::string BadRequest();
     model::Game& game_;
 };
 

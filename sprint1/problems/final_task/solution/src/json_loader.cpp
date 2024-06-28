@@ -4,6 +4,9 @@
 
 namespace json_loader {
 
+using namespace boost::json;
+using namespace std::literals;
+
 int to_int(int64_t i){
     return static_cast<int>(i);
 }
@@ -14,15 +17,19 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
     // Загрузить модель игры из файла
     model::Game game;
     std::ifstream in{json_path};
+    if(!in){
+        std::cerr << "Open file error. File: " << json_path << std::endl;
+        return {};
+    }
     std::stringstream ss;
     ss << in.rdbuf();
     auto data = parse(ss.str());
-    auto jdata = data.as_object();
-    if(!jdata.contains("maps"s)){
+    auto data_object = data.as_object();
+    if(!data_object.contains("maps"s)){
         std::cout << "Error reading config\n";
         return game;
     }
-    auto jmaps = jdata.at("maps").as_array();
+    auto jmaps = data_object.at("maps").as_array();
     for(auto jmap : jmaps){
         model::Map::Id id{std::string{jmap.at("id").as_string()}};
         std::string name{jmap.at("name"s).as_string()};
@@ -30,7 +37,7 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
 
         model::Map map{id, name};
 
-        for(auto jroad : jroads){
+        for(const auto& jroad : jroads){
             if(jroad.as_object().contains("x1")){
                 map.AddRoad(model::Road{model::Road::HORIZONTAL, 
                     {to_int(jroad.at("x0").as_int64()), to_int(jroad.at("y0").as_int64())}, 
@@ -42,12 +49,12 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
             }
         }
         auto jbuildings = jmap.at("buildings").as_array();
-        for(auto jbuilding : jbuildings){
+        for(const auto& jbuilding : jbuildings){
             map.AddBuilding(model::Building{model::Rectangle{{to_int(jbuilding.at("x").as_int64()), to_int(jbuilding.at("y").as_int64())},
                 {to_int(jbuilding.at("w").as_int64()), to_int(jbuilding.at("h").as_int64())}}});
         }
         auto joffices = jmap.at("offices").as_array();
-        for(auto joffice : joffices){
+        for(const auto& joffice : joffices){
             model::Office::Id id{std::string{joffice.at("id").as_string()}};
             map.AddOffice(model::Office{
                 id,

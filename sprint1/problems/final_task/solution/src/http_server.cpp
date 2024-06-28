@@ -32,6 +32,9 @@ void SessionBase::OnRead(beast::error_code ec, [[maybe_unused]] std::size_t byte
 void SessionBase::Close(){
     beast::error_code ec;
     stream_.socket().shutdown(tcp::socket::shutdown_send, ec);
+    if(ec){
+        std::cerr << "Error while session closing: " << ec.what() << std::endl;
+    }
 }
 
 void SessionBase::OnWrite(bool close, beast::error_code ec, [[maybe_unused]] std::size_t bytes_written){

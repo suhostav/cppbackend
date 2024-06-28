@@ -8,9 +8,6 @@
 
 namespace json_loader {
 
-using namespace boost::json;
-using namespace std::literals;
-
 model::Game LoadGame(const std::filesystem::path& json_path);
 }  // namespace json_loader
 
