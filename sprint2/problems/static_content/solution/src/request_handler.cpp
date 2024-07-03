@@ -165,11 +165,16 @@ namespace http_handler {
         std::string file_ext{file_path.extension()};
         std::for_each(file_ext.begin(), file_ext.end(), [](char& c){ c = (char)tolower(c);});
         http::file_body::value_type file;
-        std::cout << "requested file: " << file_path.c_str() << ", file extension: " << file_ext << std::endl;
+        // std::cout << "requested file: " << file_path.c_str() << ", file extension: " << file_ext << std::endl;
         if (beast::error_code ec; file.open(file_path.c_str(), beast::file_mode::read, ec), ec) {
             throw std::runtime_error("Failed to open file "s + file_name);
         }
         response.body() = std::move(file);
+        if(extensions_.contains(file_ext)){
+            response.set(http::field::content_type, extensions_[file_ext]);
+        } else{
+            response.set(http::field::content_type, ContentType::OCTET_STREAM);
+        }
         response.prepare_payload();
 
         return response;

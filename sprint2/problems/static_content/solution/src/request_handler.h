@@ -40,6 +40,9 @@ public:
                 const std::string map_request{"/api/v1/maps/"};
                 const std::string bad_api_request{"/api/"};
                 std::string target{req.target()};
+                if(target == "/"s){
+                    target = "/index.html"s;
+                }
                 if(target == maps_list_request){
                     body = MapsListResponse();
                     response =  text_response(http::status::ok, body, ContentType::APPLICATION_JSON);
@@ -87,6 +90,7 @@ private:
 
     struct ContentType {
         ContentType() = delete;
+        constexpr static std::string_view OCTET_STREAM =   "text/html"sv;
         constexpr static std::string_view TEXT_HTML =   "text/html"sv;
         constexpr static std::string_view TEXT_CSS =   "text/css"sv;
         constexpr static std::string_view TEXT_PLAIN =   "text/plain"sv;
