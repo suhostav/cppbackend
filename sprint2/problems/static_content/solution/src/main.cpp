@@ -43,7 +43,7 @@ int main(int argc, const char* argv[]) {
         std::string prog_dir{this_prog.substr(0, this_prog.find_last_of('/'))};
         std::string solution_dir{prog_dir.substr(0, prog_dir.length() - "build/bin"s.length())};
         std::string base_dir{solution_dir + static_dir};
-        std::cout << "base dir for statics: " << base_dir;
+        // std::cout << "base dir for statics: " << base_dir;
         // std::string base_dir{"static"s};
 
         // 2. Инициализируем io_context
