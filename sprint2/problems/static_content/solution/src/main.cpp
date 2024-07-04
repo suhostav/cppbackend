@@ -30,15 +30,16 @@ void RunWorkers(unsigned n, const Fn& fn) {
 }  // namespace
 
 int main(int argc, const char* argv[]) {
-    // if (argc != 2) {
-    //     std::cerr << "Usage: game_server <game-config-json>"sv << std::endl;
-    //     return EXIT_FAILURE;
-    // }
+    if (argc != 3) {
+        std::cerr << "Usage: game_server <game-config-json> <static_dir>"sv << std::endl;
+        return EXIT_FAILURE;
+    }
     try {
         // 1. Загружаем карту из файла и построить модель игры
-        // model::Game game = json_loader::LoadGame(argv[1]);
-        std::string static_dir{"static"s};
-        model::Game game = json_loader::LoadGame("../../data/config.json");
+        model::Game game = json_loader::LoadGame(argv[1]);
+        // std::string static_dir{"static"s};
+        std::string static_dir{argv[2]};
+        // model::Game game = json_loader::LoadGame("../../data/config.json");
         std::string this_prog{argv[0]};
         std::string prog_dir{this_prog.substr(0, this_prog.find_last_of('/'))};
         std::string solution_dir{prog_dir.substr(0, prog_dir.length() - "build/bin"s.length())};
