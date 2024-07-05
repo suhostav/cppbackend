@@ -40,13 +40,16 @@ int main(int argc, const char* argv[]) {
         // std::string static_dir{"static"s};
         std::string static_dir{argv[2]};
         // model::Game game = json_loader::LoadGame("../../data/config.json");
-        std::string this_prog{argv[0]};
-        std::string prog_dir{this_prog.substr(0, this_prog.find_last_of('/'))};
-        std::string solution_dir{prog_dir.substr(0, prog_dir.length() - "build/bin"s.length())};
-        std::string base_dir{solution_dir + static_dir};
+        // std::string this_prog{argv[0]};
+        // std::string prog_dir{this_prog.substr(0, this_prog.find_last_of('/'))};
+        // std::string solution_dir{prog_dir.substr(0, prog_dir.length() - "build/bin"s.length())};
+        // std::string base_dir{solution_dir + static_dir};
         // std::cout << "base dir for statics: " << base_dir;
         // std::string base_dir{"static"s};
-
+        std::string base_dir{static_dir};
+        // if(!base_dir.empty() && base_dir[base_dir.size()-1] != '/'){
+        //     base_dir += '/';
+        // }
         // 2. Инициализируем io_context
         const unsigned num_threads = std::thread::hardware_concurrency();
         net::io_context ioc(num_threads);

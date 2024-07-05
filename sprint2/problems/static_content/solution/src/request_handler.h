@@ -40,6 +40,7 @@ public:
                 const std::string map_request{"/api/v1/maps/"};
                 const std::string bad_api_request{"/api/"};
                 std::string target{req.target()};
+                target = DecodeUri(target);
                 if(target == "/"s){
                     target = "/index.html"s;
                 }
