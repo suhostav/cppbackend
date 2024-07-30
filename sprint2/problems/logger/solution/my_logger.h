@@ -8,6 +8,7 @@
 #include <string_view>
 #include <optional>
 #include <mutex>
+#include <syncstream>
 #include <thread>
 
 using namespace std::literals;
@@ -30,7 +31,13 @@ class Logger {
     }
 
     // Для имени файла возьмите дату с форматом "%Y_%m_%d"
-    std::string GetFileTimeStamp() const;
+    std::string GetFileTimeStamp() const{
+        const auto now = GetTime();
+        const time_t tm = std::chrono::system_clock::to_time_t(now);
+        std::stringstream ss;
+        ss << std::put_time(std::gmtime(&tm), "%Y_%m_%d");
+        return ss.str();
+    }
 
     Logger() = default;
     Logger(const Logger&) = delete;
@@ -44,24 +51,23 @@ public:
     // Выведите в поток все аргументы.
     template<class... Ts>
     void Log(const Ts&... args){
-        for(const auto& arg : args){
-
+        std::ofstream log_file("/var/log/sample_log_" + GetFileTimeStamp() + ".log", std::ios_base::app);
+        std::osyncstream out(log_file);
+        if(log_file.is_open()){
+            out << GetTimeStamp() << ": ";
+            (out << ... << args);
+            out << std::endl;
         }
     }
 
     // Установите manual_ts_. Учтите, что эта операция может выполняться
     // параллельно с выводом в поток, вам нужно предусмотреть 
     // синхронизацию.
-    void SetTimestamp(std::chrono::system_clock::time_point ts);
-
+    void SetTimestamp(std::chrono::system_clock::time_point ts){
+        std::lock_guard<std::mutex> lock(m_);
+        manual_ts_ = ts;
+    }
 private:
     std::optional<std::chrono::system_clock::time_point> manual_ts_;
-    std::optional<std::ofstream>log_file_;
-
-    void SetFile(){
-        if(log_file_ && log_file_->){
-            log_file_->close();
-
-        }
-    }
+    std::mutex m_;
 };
