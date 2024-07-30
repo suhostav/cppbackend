@@ -1,16 +1,16 @@
-FROM gcc:11.3 as build
+FROM gcc:13.3 as build
 # Выполнить установку зависимостей внутри контейнера.
 RUN apt update && \
     apt install -y \
       python3-pip \
       cmake \
-    && \
-    pip3 install conan==1.*
- 
+      && \
+      pip3 install conan==1.*
+   
 #copy conanfile.txt and run conan install ...
 COPY conanfile.txt /app/
 RUN mkdir /app/build && cd /app/build && \
-    conan install .. --build=missing
+    conan install .. --build=missing -s compiler.libcxx=libstdc++11 -s build_type=Release
 
 # Скопировать файлы проекта внутрь контейнера
 COPY ./src /app/src
@@ -30,4 +30,4 @@ COPY --from=build /app/build/bin/game_server /app/
 COPY ./data /app/data
 COPY ./static /app/static
 
-ENTRYPOINT ["/app/game_server", "/app/data/config.json", "app/static"]
+ENTRYPOINT ["/app/game_server", "/app/data/config.json", "/app/static"]
