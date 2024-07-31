@@ -74,6 +74,5 @@ void SessionBase::WriteResponseLog(int response_time, int response_code, const s
     BOOST_LOG_TRIVIAL(info) << logging::add_value(additional_data, res_data) << "response sent"sv;
 }
 
-
 }  // namespace http_server
 
