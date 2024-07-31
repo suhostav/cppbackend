@@ -69,7 +69,7 @@ void SessionBase::OnWrite(bool close, beast::error_code ec, [[maybe_unused]] std
 void SessionBase::WriteResponseLog(int response_time, int response_code, const std::string& content_type){
     boost::json::value res_data{
         {"response_time"s, response_time},
-        {"response_code"s, response_code},
+        {"code"s, response_code},
         {"content_type"s, content_type}};
     BOOST_LOG_TRIVIAL(info) << logging::add_value(additional_data, res_data) << "response sent"sv;
 }
