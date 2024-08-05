@@ -4,9 +4,9 @@
 
 class Dog {
 public:
-    Dog(std::string& name): name_(std::move(name)),
-        id_{next_id_++}{
-
+    Dog(std::string& name)
+        : name_(std::move(name))
+        , id_{next_id_++} {
     }
     std::uint32_t GetId(){return id_;}
 private:

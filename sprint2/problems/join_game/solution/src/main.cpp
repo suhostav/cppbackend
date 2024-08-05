@@ -5,9 +5,11 @@
 #include <iostream>
 #include <thread>
 
+#include "tagged.h"
 #include "logger.h"
 #include "json_loader.h"
 #include "request_handler.h"
+#include "PlayerTokens.h"
 
 using namespace std::literals;
 namespace net = boost::asio;
@@ -34,6 +36,9 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(additional_data, "AdditionalData", boost::json::valu
 
 int main(int argc, const char* argv[]) {
     InitLog();
+    PlayerTokens tk;
+    auto token = *tk.GetToket();
+    std::cout << token << ", lenght = " << token.size() << std::endl;
     if (argc != 3) {
         std::cerr << "Usage: game_server <game-config-json> <static_dir>"sv << std::endl;
         return EXIT_FAILURE;
