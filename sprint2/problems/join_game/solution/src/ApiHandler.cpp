@@ -234,8 +234,8 @@ namespace http_handler {
     std::string ApiHandler::JoinGameResponse(std::string_view dog_name, std::string_view map_id) const{
         app::JoinInfo join_info = game_app_.JoinGame(dog_name, map_id);
         boost::json::object jbody;
-        jbody["dog_id"] = join_info.player->GetDog()->GetId();
-        jbody["playerId"] = *(join_info.token);
+        jbody["playerId"] = join_info.player->GetDog()->GetId();
+        jbody["authToken"] = *(join_info.token);
         return boost::json::serialize(jbody);
     }
 
