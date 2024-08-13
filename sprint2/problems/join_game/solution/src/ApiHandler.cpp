@@ -193,7 +193,7 @@ namespace http_handler {
         } else if(target == players_list_requesst){
             if(IsGetOrHeadRequest(req)){
                 try{
-                    if(req.count("Authorization") == 0){
+                    if(req.count("Authorization") == 0 || !req.at("Authorization").starts_with("Bearer ")){
                         response = handlers_statics::InvalidTokenResponse(req.version(), req.keep_alive());
                     } else {
                         auto session = GetSessionByToken(req["Authorization"]);
