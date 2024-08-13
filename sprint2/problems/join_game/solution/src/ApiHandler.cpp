@@ -104,6 +104,7 @@ namespace http_handler {
         StringResponse response;
         try{
             response = DoHandleApiRequest(request);
+            response.set("Cache-Control", "no-cache");
         } catch(const model::BadMapIdException& ex){
             response = handlers_statics::MakeStringResponse(
                 http::status::not_found,
