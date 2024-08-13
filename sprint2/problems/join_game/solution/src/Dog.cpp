@@ -1,4 +1,6 @@
 #include "Dog.h"
 
-std::uint32_t Dog::next_id_ = 0;
+namespace model {
+std::uint64_t Dog::next_id_ = 0;
 
+}

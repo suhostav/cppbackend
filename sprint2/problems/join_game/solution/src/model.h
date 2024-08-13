@@ -1,12 +1,23 @@
 #pragma once
+#include <stdexcept>
 #include <string>
 #include <sstream>
 #include <unordered_map>
+#include <deque>
 #include <vector>
 
 #include "tagged.h"
+#include "Dog.h"
+// #include "PlayerTokens.h"
+// #include "GameSession.h"
 
 namespace model {
+using namespace std::literals;
+
+class BadMapIdException : public std::invalid_argument {
+public:
+    BadMapIdException(const std::string& msg): std::invalid_argument(msg){}
+};
 
 using Dimension = int;
 using Coord = Dimension;
@@ -125,38 +136,21 @@ public:
     using Buildings = std::vector<Building>;
     using Offices = std::vector<Office>;
 
-    Map(Id id, std::string name) noexcept
-        : id_(std::move(id))
-        , name_(std::move(name)) {
-    }
+    Map(Id id, std::string name) noexcept;
 
-    const Id& GetId() const noexcept {
-        return id_;
-    }
+    const Id& GetId() const noexcept ;
 
-    const std::string& GetName() const noexcept {
-        return name_;
-    }
+    const std::string& GetName() const noexcept ;
 
-    const Buildings& GetBuildings() const noexcept {
-        return buildings_;
-    }
+    const Buildings& GetBuildings() const noexcept ;
 
-    const Roads& GetRoads() const noexcept {
-        return roads_;
-    }
+    const Roads& GetRoads() const noexcept ;
 
-    const Offices& GetOffices() const noexcept {
-        return offices_;
-    }
+    const Offices& GetOffices() const noexcept ;
 
-    void AddRoad(const Road& road) {
-        roads_.emplace_back(road);
-    }
+    void AddRoad(const Road& road) ;
 
-    void AddBuilding(const Building& building) {
-        buildings_.emplace_back(building);
-    }
+    void AddBuilding(const Building& building) ;
 
     void AddOffice(Office office);
 
@@ -172,9 +166,34 @@ private:
     Offices offices_;
 };
 
+class GameSession {
+public:
+    GameSession(Map* map);
+    Dog* AddDog(std::string_view dog_name);
+    Map* GetMap();
+    Dog* GetDogById(std::uint64_t id) ;
+    size_t GetDogsNumber() const;
+    const std::unordered_map<std::uint64_t, Dog*>& GetSessionDogs() const{
+        return dogs_by_Ids_;
+    }
+
+private:
+    std::deque<Dog> dogs_;
+    std::unordered_map<std::uint64_t, Dog*> dogs_by_Ids_;
+    Map* map_;
+};
+
+struct JoinResult{
+    Dog* dog;
+    GameSession* session;
+};
+
 class Game {
 public:
     using Maps = std::vector<Map>;
+    Game(int max_map_dogs = 10): max_map_dogs_(max_map_dogs){
+
+    }
 
     void AddMap(Map map);
 
@@ -188,12 +207,23 @@ public:
         }
         return nullptr;
     }
+
+    size_t GetMapIndex(const Map::Id& id){
+        if(map_id_to_index_.count(id) > 0){
+            return map_id_to_index_.at(id);
+        }
+        throw BadMapIdException("Bad map id"s + *id);
+    }
+    JoinResult JoinGame(std::string_view dog_name, std::string_view map_id_str);
 private:
+    int max_map_dogs_;
     using MapIdHasher = util::TaggedHasher<Map::Id>;
     using MapIdToIndex = std::unordered_map<Map::Id, size_t, MapIdHasher>;
 
     std::vector<Map> maps_;
     MapIdToIndex map_id_to_index_;
+    std::unordered_map<size_t,std::vector<GameSession>> maps_sessions_;
+
 };
 
 }  // namespace model

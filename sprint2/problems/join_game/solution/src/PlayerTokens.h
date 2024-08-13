@@ -7,37 +7,22 @@
 
 #include "tagged.h"
 #include "Player.h"
+#include "Players.h"
 
 namespace detail {
 struct TokenTag {};
 }  // namespace detail
 
+namespace app {
 using Token = util::Tagged<std::string, detail::TokenTag>;
+// class Player;
 
 class PlayerTokens {
 public:
     PlayerTokens() = default;
-    Token GetToket(){
-        std::stringstream ss;
-        ss << std::hex << generator1_() << generator2_();
-        auto result = ss.str();
-        if(result.size() < 32){
-            result = std::string(32 - result.size(), '0') + result;
-        }
-        return Token{result};
-    }
-
-    Token Add(Player& player){
-        Token token = GetToket();
-        token_to_player_[token] = &player;
-        return token;
-    }
-    Player* FindPlayerByToken(Token token) const{
-        if(token_to_player_.count(token) == 0){
-            return nullptr;
-        }
-        return token_to_player_.at(token);
-    }
+    Token GetToken();
+    Token Add(Player& player);
+    Player* FindPlayerByToken(Token token) const;
 private:
     std::random_device random_device_;
     std::mt19937_64 generator1_{[this] {
@@ -50,3 +35,4 @@ private:
     }()};
     std::unordered_map<Token, Player*, util::TaggedHasher<Token>> token_to_player_;
 };
+}   //namespace app

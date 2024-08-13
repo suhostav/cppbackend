@@ -5,11 +5,12 @@
 #include <iostream>
 #include <thread>
 
-#include "tagged.h"
+// #include "tagged.h"
 #include "logger.h"
 #include "json_loader.h"
+#include "GameApp.h"
 #include "request_handler.h"
-#include "PlayerTokens.h"
+// #include "PlayerTokens.h"
 
 using namespace std::literals;
 namespace net = boost::asio;
@@ -36,22 +37,28 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(additional_data, "AdditionalData", boost::json::valu
 
 int main(int argc, const char* argv[]) {
     InitLog();
-    PlayerTokens tk;
-    auto token = *tk.GetToket();
-    std::cout << token << ", lenght = " << token.size() << std::endl;
+    std::string static_files_root{"static"};
+    std::filesystem::path conf_path;
     if (argc != 3) {
-        std::cerr << "Usage: game_server <game-config-json> <static_dir>"sv << std::endl;
-        return EXIT_FAILURE;
+        // std::cerr << "Usage: game_server <game-config-json>"sv << std::endl;
+        // return EXIT_FAILURE;
+        std::filesystem::path prog{argv[0]};
+        prog.remove_filename();
+        auto static_path = prog / "../../static";
+        prog/= "../../data/config.json";
+        conf_path = prog.lexically_normal();
+        static_files_root = static_path.lexically_normal().string();
+    } else {
+        static_files_root = argv[2];
+        conf_path = argv[1];
     }
     try {
         // 1. Загружаем карту из файла и построить модель игры
-        model::Game game = json_loader::LoadGame(argv[1]);
-        std::string static_dir{argv[2]};
-        std::string base_dir{static_dir};
+        model::Game game = json_loader::LoadGame(conf_path);
         // 2. Инициализируем io_context
         const unsigned num_threads = std::thread::hardware_concurrency();
         net::io_context ioc(num_threads);
-
+        auto api_strand = net::make_strand(ioc);
         // 3. Добавляем асинхронный обработчик сигналов SIGINT и SIGTERM
         net::signal_set signals(ioc, SIGINT, SIGTERM);
         signals.async_wait([&ioc](const sys::error_code& ec, [[maybe_unused]] int signal_number) {
@@ -66,15 +73,16 @@ int main(int argc, const char* argv[]) {
         });
 
         // 4. Создаём обработчик HTTP-запросов и связываем его с моделью игры
-        http_handler::RequestHandler handler(static_dir, net::make_strand(ioc), game);
+        app::GameApp game_app(game);
+        auto api_handler = std::make_shared<http_handler::ApiHandler>(game_app);
+        auto handler = std::make_shared<http_handler::RequestHandler>(
+            static_files_root, api_strand, api_handler
+        );
         // 5. Запустить обработчик HTTP-запросов, делегируя их обработчику запросов
         
         const auto address = net::ip::make_address("0.0.0.0");
         constexpr net::ip::port_type port = 8080;
-        http_server::ServeHttp(ioc, {address, port}, base_dir, 
-            [&handler](auto&& req, auto&& send, const std::string& base_dir) {
-            handler(std::forward<decltype(req)>(req), std::forward<decltype(send)>(send));
-        });
+        http_server::ServeHttp(ioc, {address, port}, handler);
         
 
         // Эта надпись сообщает тестам о том, что сервер запущен и готов обрабатывать запросы

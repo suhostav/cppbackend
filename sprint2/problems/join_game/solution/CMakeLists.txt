@@ -24,6 +24,20 @@ add_executable(game_server
 	src/json_loader.cpp
 	src/request_handler.cpp
 	src/request_handler.h
+	src/ApiHandler.h 
+	src/ApiHandler.cpp 
+	src/handlers_tools 
+	src/handlers_tools.cpp
+	src/Dog.h 
+	src/Dog.cpp 
+	src/Player.h 
+	src/Player.cpp 
+	src/Players.h 
+	src/Players.cpp
+	src/PlayerTokens.h 
+	src/PlayerTokens.cpp
+	src/GameApp.h 
+	src/GameApp.cpp 
 )
 
 target_link_libraries(game_server PRIVATE Threads::Threads CONAN_PKG::boost)

@@ -55,7 +55,7 @@ protected:
         auto end_request_handling = std::chrono::system_clock::now();
         auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end_request_handling - start_request_handling_);
         int request_handling_duration = millis.count();
-        WriteResponseLog(request_handling_duration, response.result_int(), content_type);
+        WriteResponseLog(request_handling_duration, safe_response->result_int(), content_type);
     }
 
 private:

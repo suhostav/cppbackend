@@ -1,6 +1,10 @@
 #pragma once
-#include "Dog.h"
-#include "GameSession.h"
+
+#include "model.h"
+
+namespace app {
+
+using namespace model;
 
 class Player{
 public:
@@ -18,3 +22,4 @@ private:
     GameSession* session_;
     Dog* dog_;
 };
+} //namespace app
