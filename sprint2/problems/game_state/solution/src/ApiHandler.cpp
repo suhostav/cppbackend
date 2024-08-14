@@ -211,7 +211,7 @@ namespace http_handler {
                     } else {
                         auto session = GetSessionByToken(req["Authorization"]);
                         if(session == nullptr){
-                            response = handlers_statics::UnknownTokenResponse(req.version(), req.keep_alive());
+                            response = handlers_statics::InvalidTokenResponse(req.version(), req.keep_alive());
                         } else {
                             if(IsGetRequest(req)) {
                                 body = StateResponse(session);
