@@ -295,7 +295,7 @@ std::string ApiHandler::StateResponse(const model::GameSession* session) const{
     }
     jbody["players"] = jplayers;
 
-    return "players: "s + boost::json::serialize(jplayers);
+    return /*"players: "s +*/ boost::json::serialize(jbody);
 }
 
 }
