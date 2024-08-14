@@ -67,6 +67,8 @@ struct handlers_statics {
     static constexpr std::string_view GET_STR{"GET"};
     static constexpr std::string_view POST_STR{"POST"};
     static constexpr std::string_view API_STR{"/api/"};
+    static constexpr std::string_view BEARER_STR{"Bearer "};
+    static constexpr size_t token_length = 32;
     static std::map<std::string, std::string_view> extensions_ ;
     static StringResponse MakeStringResponse(http::status status,
                                         std::string_view body,

@@ -1,8 +1,8 @@
 #pragma once
 
 #define BOOST_BEAST_USE_STD_STRING_VIEW
+#include <optional>
 #include "handlers_tools.h"
-// #include "PlayerTokens.h"
 #include "Dog.h"
 #include "GameApp.h"
 
@@ -41,6 +41,7 @@ private:
     std::pair<bool, std::string> MapResponse(const std::string& map_id) const;
     std::string BadRequest() const;
     std::string JoinGameResponse(std::string_view dog_name, std::string_view map_id) const;
+    std::optional<app::Token> TryExtractToken(const StringRequest& req) const;
     std::string AutorizedResponse(const std::string& req_path, std::string_view token_str) const;
     const model::GameSession* GetSessionByToken(std::string_view token_str) const;
     std::string PlayersResponse(const model::GameSession* session) const;

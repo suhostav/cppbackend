@@ -179,7 +179,8 @@ namespace http_handler {
         } else if(target == players_list_requesst){
             if(IsGetOrHeadRequest(req)){
                 try{
-                    if(req.count("Authorization") == 0 || !req.at("Authorization").starts_with("Bearer ")){
+                    auto token_opt = TryExtractToken(req);
+                    if(!token_opt){
                         response = handlers_statics::InvalidTokenResponse(req.version(), req.keep_alive());
                     } else {
                         auto session = GetSessionByToken(req["Authorization"]);
@@ -206,7 +207,8 @@ namespace http_handler {
         } else if(target == state_requesst){
             if(IsGetOrHeadRequest(req)){
                 try{
-                    if(req.count("Authorization") == 0 || !req.at("Authorization").starts_with("Bearer ")){
+                    auto token_opt = TryExtractToken(req);
+                    if(!token_opt){
                         response = handlers_statics::InvalidTokenResponse(req.version(), req.keep_alive());
                     } else {
                         auto session = GetSessionByToken(req["Authorization"]);
@@ -251,6 +253,31 @@ namespace http_handler {
         jbody["authToken"] = *(join_info.token);
         return boost::json::serialize(jbody);
     }
+
+std::optional<app::Token> ApiHandler::TryExtractToken(const StringRequest& req) const {
+    std::string_view auth_str = req["Authorization"];
+    if(auth_str.size() == 0){
+        return {};
+    }
+    if(!auth_str.starts_with(handlers_statics::BEARER_STR)){
+        return {};
+    }
+    std::string_view token_sv = auth_str.substr(handlers_statics::BEARER_STR.size());
+    std::string token_str;
+    if(token_sv.size() != handlers_statics::token_length){
+        return {};
+    }
+    for(auto tc : token_sv){
+        char c = (char)tolower(tc);
+        if(isdigit(c) || (c >= 'a' && c <= 'f')){
+            token_str += c;
+        } else {
+            return {};
+        }
+    }
+    return app::Token(token_str);
+}
+
 
 std::string ApiHandler::AutorizedResponse(const std::string& req_path, std::string_view token_str) const{
     std::string result;
