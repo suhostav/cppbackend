@@ -280,18 +280,22 @@ std::string ApiHandler::PlayersResponse(const model::GameSession* session) const
 
 std::string ApiHandler::StateResponse(const model::GameSession* session) const{
     boost::json::object jbody;
-    boost::json::object jpayers;
+    boost::json::object jplayers;
     const std::unordered_map<std::uint64_t, model::Dog*>& dogs = session->GetSessionDogs();
     for(auto& dog : dogs){
         boost::json::array point{dog.second->GetPoint().h, dog.second->GetPoint().v};
         boost::json::array speed{dog.second->GetSpeed().hs, dog.second->GetSpeed().vs};
         std::string dir_str{static_cast<char>(dog.second->GetDir())};
         boost::json::string dir{dir_str};
-        jpayers[std::to_string(dog.first)] = {"pos", point, "speed", speed, "dir", dir };
+        boost::json::object jplayer;
+        jplayer["pos"] = point;
+        jplayer["speed"] = speed;
+        jplayer["dir"] = dir;
+        jplayers[std::to_string(dog.first)] = jplayer;
     }
-    jbody["players"] = jpayers;
+    jbody["players"] = jplayers;
 
-    return "players: "s + boost::json::serialize(jpayers);
+    return "players: "s + boost::json::serialize(jplayers);
 }
 
 }
