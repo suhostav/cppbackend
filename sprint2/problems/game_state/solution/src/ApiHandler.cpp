@@ -184,7 +184,7 @@ namespace http_handler {
                     } else {
                         auto session = GetSessionByToken(req["Authorization"]);
                         if(session == nullptr){
-                            response = handlers_statics::InvalidTokenResponse(req.version(), req.keep_alive());
+                            response = handlers_statics::UnknownTokenResponse(req.version(), req.keep_alive());
                         } else {
                             if(IsGetRequest(req)) {
                                 body = PlayersResponse(session);
@@ -211,7 +211,7 @@ namespace http_handler {
                     } else {
                         auto session = GetSessionByToken(req["Authorization"]);
                         if(session == nullptr){
-                            response = handlers_statics::InvalidTokenResponse(req.version(), req.keep_alive());
+                            response = handlers_statics::UnknownTokenResponse(req.version(), req.keep_alive());
                         } else {
                             if(IsGetRequest(req)) {
                                 body = StateResponse(session);
@@ -280,16 +280,18 @@ std::string ApiHandler::PlayersResponse(const model::GameSession* session) const
 
 std::string ApiHandler::StateResponse(const model::GameSession* session) const{
     boost::json::object jbody;
+    boost::json::object jpayers;
     const std::unordered_map<std::uint64_t, model::Dog*>& dogs = session->GetSessionDogs();
     for(auto& dog : dogs){
         boost::json::array point{dog.second->GetPoint().h, dog.second->GetPoint().v};
         boost::json::array speed{dog.second->GetSpeed().hs, dog.second->GetSpeed().vs};
         std::string dir_str{static_cast<char>(dog.second->GetDir())};
         boost::json::string dir{dir_str};
-        jbody[std::to_string(dog.first)] = {"pos", point, "speed", speed, "dir", dir };
+        jpayers[std::to_string(dog.first)] = {"pos", point, "speed", speed, "dir", dir };
     }
+    jbody["players"] = jpayers;
 
-    return boost::json::serialize(jbody);
+    return "players: "s + boost::json::serialize(jpayers);
 }
 
 }
