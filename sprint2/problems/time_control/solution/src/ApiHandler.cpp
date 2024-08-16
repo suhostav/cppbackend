@@ -289,10 +289,10 @@ std::string ApiHandler::TickResponse(const StringRequest& req) const{
     auto session = const_cast<model::GameSession*>(GetSession(req));
     auto token = TryExtractToken(req);
     boost::json::object req_body{boost::json::parse(req.body()).as_object()};
-    if(!req_body.contains("timeDelta") || !req_body["timeDelta"].is_double()){
+    if(!req_body.contains("timeDelta") || !req_body["timeDelta"].is_int64()){
         throw BadRequestException("invalidArgument", "Failed to parse tick request JSON");
     }
-    double time_change = req_body["timeDelta"].as_double();
+    std::int64_t time_change = req_body["timeDelta"].as_int64();
     return "{}"s;    
 }
 

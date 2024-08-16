@@ -117,7 +117,7 @@ public:
     static constexpr std::string_view players_list_requesst{"/api/v1/game/players"};
     static constexpr std::string_view state_requesst{"/api/v1/game/state"};
     static constexpr std::string_view action_request{"/api/v1/game/player/action"};
-    static constexpr std::string_view tick_request{"/api/v1/game/player/tick"};
+    static constexpr std::string_view tick_request{"/api/v1/game/tick"};
 };
 
 }   //namespace http_handler

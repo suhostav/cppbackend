@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <unordered_map>
 #include "model.h"
 #include "Player.h"
@@ -36,10 +37,13 @@ public:
 
     JoinInfo JoinGame(std::string_view dog_name, std::string_view map_id_str);
     void SetPlayerSpeed(Token token, model::GameSession* session, char dir);
+    void Move(std::chrono::system_clock::period);
+
 private:
     model::Game& game_;
     Players players_;
     PlayerTokens player_tokens_;
     std::unordered_map<Player*, model::GameSession*> player_session_;
+
 };
 }
