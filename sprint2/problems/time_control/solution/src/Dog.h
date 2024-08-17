@@ -1,35 +1,13 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include "coords.h"
 
 namespace model{
 
-using DogCoord = double;
-
-
-struct DogPoint {
-    DogCoord h; //horizontal coord
-    DogCoord v; //vertical coord
-};
-
-using DogSpeedPerSecond = double;
-
-struct DogSpeed {
-    DogSpeed(DogSpeedPerSecond h, DogSpeedPerSecond v): hs(h), vs(v){}
-    DogSpeedPerSecond hs;    //horizontal speed
-    DogSpeedPerSecond vs;    //vertical speed
-};
-
-enum class DogDir {
-    NORTH = 'U',
-    SOUTH = 'S',
-    WEST = 'L',
-    EAST = 'R'
-};
-
 class Dog {
 public:
-    Dog(std::string_view name, DogPoint p)
+    Dog(std::string_view name, DPoint p)
         : name_(name.begin(), name.end())
         , point_(p)
         , id_{next_id_++} {
@@ -39,7 +17,7 @@ public:
         return name_;
     }
 
-    const DogPoint& GetPoint() const {
+    const DPoint& GetPoint() const {
         return point_;
     }
 
@@ -56,16 +34,18 @@ public:
         speed_.vs = vs;
     }
 
-    void SetDir(DogDir dir){
+    void SetDir(DogDir dir, DCoord limit){
         dir_ = dir;
+        limit_ = limit;
     }
     
 private:
     std::string name_;
     std::uint64_t id_;
-    DogPoint point_;
+    DPoint point_;
     DogSpeed speed_ = {0.0, 0.0};
     DogDir dir_ = {DogDir::NORTH};
+    DCoord limit_ = 0.0;
 
     static std::uint64_t next_id_;
 };

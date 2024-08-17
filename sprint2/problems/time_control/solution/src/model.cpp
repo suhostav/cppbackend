@@ -1,7 +1,6 @@
 #include "model.h"
 
 #include <stdexcept>
-
 namespace model {
 using namespace std::literals;
 
@@ -37,6 +36,21 @@ DRectangle Road::CalcRectangle(){
 bool Road::Contains(DPoint p) const{
     return (p.x > rect_.position.x && p.x < (rect_.position.x + rect_.size.width)) &&
            (p.y > rect_.position.y && p.y < (rect_.position.y + rect_.size.height));
+}
+
+DCoord Road::GetLimit(DPoint p, DogDir dir) const{
+    switch (dir)
+    {
+    case DogDir::NORTH: 
+        return rect_.position.y;
+    case DogDir::SOUTH:
+        return rect_.position.y + rect_.size.height;
+    case DogDir::EAST:
+        return rect_.position.x + rect_.size.width;
+    case DogDir::WEST:
+        return rect_.position.x;
+    }
+    return 0.0;
 }
 
 // ============= Map methods -----------------------------------
@@ -94,15 +108,85 @@ void Map::AddOffice(Office office) {
     }
 }
 
+DCoord Map::GetUpperLimit(DPoint p) const{
+    DCoord limit{std::numeric_limits<double>::max()};
+    for(const auto& road : roads_){
+        if(road.Contains(p)){
+            DCoord road_limit = road.GetLimit(p, DogDir::NORTH);
+            if(road_limit < limit){
+                limit = road_limit;
+            }
+        }
+    }
+    return limit;
+}
+
+DCoord Map::GetLeftLimit(DPoint p) const{
+    DCoord limit{std::numeric_limits<double>::max()};
+    for(const auto& road : roads_){
+        if(road.Contains(p)){
+            DCoord road_limit = road.GetLimit(p, DogDir::WEST);
+            if(road_limit < limit){
+                limit = road_limit;
+            }
+        }
+    }
+    return limit;
+}
+
+DCoord Map::GetBottomLimit(DPoint p) const{
+    DCoord limit{std::numeric_limits<double>::lowest()};
+    for(const auto& road : roads_){
+        if(road.Contains(p)){
+            DCoord road_limit = road.GetLimit(p, DogDir::SOUTH);
+            if(road_limit > limit){
+                limit = road_limit;
+            }
+        }
+    }
+    return limit;
+}
+
+
+DCoord Map::GetRightLimit(DPoint p) const{
+    DCoord limit{std::numeric_limits<double>::lowest()};
+    for(const auto& road : roads_){
+        if(road.Contains(p)){
+            DCoord road_limit = road.GetLimit(p, DogDir::EAST);
+            if(road_limit > limit){
+                limit = road_limit;
+            }
+        }
+    }
+    return limit;
+}
+
+DCoord Map::GetLimit(DPoint p, DogDir dir) const{
+    switch (dir)
+    {
+    case DogDir::NORTH:
+        return GetUpperLimit(p);
+    case DogDir::SOUTH:
+        return GetBottomLimit(p);
+    case DogDir::WEST:
+        return GetLeftLimit(p);
+    case DogDir::EAST:
+        return GetRightLimit(p);
+    default:
+        return std::numeric_limits<double>::max();
+    }   
+}
+//-------------- GameSession -----------------------------------
+
 GameSession::GameSession(model::Map* map): map_(map) {
 }
 
 #define TESTING_MODE
 
 Dog* GameSession::AddDog(std::string_view dog_name){
-    DogPoint p{0, 0};
+    DPoint p{0, 0};
 #ifdef TESTING_MODE
-    DogPoint road_point{0.0, 0.0};
+    DPoint road_point{0.0, 0.0};
 #else
     // choose road
     size_t n_roads = map_->GetRoads().size();

@@ -8,9 +8,8 @@
 #include <vector>
 
 #include "tagged.h"
+#include "coords.h"
 #include "Dog.h"
-// #include "PlayerTokens.h"
-// #include "GameSession.h"
 
 namespace model {
 using namespace std::literals;
@@ -20,36 +19,6 @@ public:
     BadMapIdException(const std::string& msg): std::invalid_argument(msg){}
 };
 
-using Dimension = int;
-using Coord = Dimension;
-
-struct Point {
-    Coord x, y;
-};
-
-struct DPoint {
-    double x, y;
-};
-
-struct Size {
-    Dimension width, height;
-};
-
-struct DSize {
-    double width, height;
-};
-
-struct Rectangle {
-    Rectangle(Point p, Size s): position(p), size(s){}
-    Point position;
-    Size size;
-};
-
-struct DRectangle{
-    DRectangle(DPoint p, DSize s): position(p), size(s) {}
-    DPoint position;    //top left point of rectangle
-    DSize size; //width, height from top left
-};
 
 struct Offset {
     Dimension dx, dy;
@@ -101,6 +70,7 @@ public:
         return rect_;
     }
     bool Contains(DPoint p) const;
+    DCoord GetLimit(DPoint p, DogDir dir) const;
 
 private:
     DRectangle CalcRectangle();
@@ -180,8 +150,15 @@ public:
 
     void AddOffice(Office office);
 
+    DCoord GetLimit(DPoint p, DogDir dir) const;
+
 private:
     using OfficeIdToIndex = std::unordered_map<Office::Id, size_t, util::TaggedHasher<Office::Id>>;
+
+    DCoord GetUpperLimit(DPoint p) const;
+    DCoord GetBottomLimit(DPoint p) const;
+    DCoord GetLeftLimit(DPoint p) const;
+    DCoord GetRightLimit(DPoint p) const;
 
     Id id_;
     std::string name_;

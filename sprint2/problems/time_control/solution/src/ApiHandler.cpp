@@ -261,7 +261,7 @@ std::string ApiHandler::StateResponse(const model::GameSession* session) const{
     boost::json::object jplayers;
     const std::unordered_map<std::uint64_t, model::Dog*>& dogs = session->GetSessionDogs();
     for(auto& dog : dogs){
-        boost::json::array point{dog.second->GetPoint().h, dog.second->GetPoint().v};
+        boost::json::array point{dog.second->GetPoint().x, dog.second->GetPoint().y};
         boost::json::array speed{dog.second->GetSpeed().hs, dog.second->GetSpeed().vs};
         std::string dir_str{static_cast<char>(dog.second->GetDir())};
         boost::json::string dir{dir_str};

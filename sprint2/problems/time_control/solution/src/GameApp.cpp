@@ -22,7 +22,8 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
     app::Player* player = FindPlayerByToken(token);
     auto s = session->GetMap()->GeSpeed();
     model::DogDir dog_dir = static_cast<model::DogDir>(dir);
-    player->GetDog()->SetDir(dog_dir);
+    DCoord limit = session->GetMap()->GetLimit(player->GetDog()->GetPoint(), dog_dir);
+    player->GetDog()->SetDir(dog_dir, limit);
     switch(dog_dir){
         case model::DogDir::WEST:
             player->GetDog()->SetSpeed(-s, 0);
