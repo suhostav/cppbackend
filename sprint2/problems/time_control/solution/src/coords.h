@@ -39,7 +39,7 @@ struct DRectangle{
 
 enum class DogDir {
     NORTH = 'U',
-    SOUTH = 'S',
+    SOUTH = 'D',
     WEST = 'L',
     EAST = 'R'
 };

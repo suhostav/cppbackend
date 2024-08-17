@@ -4,7 +4,7 @@ namespace model {
 std::uint64_t Dog::next_id_ = 0;
 
 void Dog::Move(std::int64_t period){
-    double seconds = 1000. / period;
+    double seconds = period / 1000.;
     switch (dir_)
     {
     case DogDir::NORTH:

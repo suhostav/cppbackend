@@ -297,7 +297,8 @@ std::string ApiHandler::TickResponse(const StringRequest& req) const{
     if(!req_body.contains("timeDelta") || !req_body["timeDelta"].is_int64()){
         throw BadRequestException("invalidArgument", "Failed to parse tick request JSON");
     }
-    std::int64_t time_change = req_body["timeDelta"].as_int64();
+    std::int64_t time_period = req_body["timeDelta"].as_int64();
+    game_app_.Move(time_period);
     return "{}"s;    
 }
 
