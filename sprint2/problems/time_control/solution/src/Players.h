@@ -13,7 +13,7 @@ public:
     Players() = default;
 
     Player* Add(Dog* dog_ptr, GameSession* session);
-    // Player* FindByDogIdAndMapId(std::uint64_t dog_id, std::uint64_t map_id);
+    void Move(std::int64_t period);
 private:
     std::vector<Player> players_;
 };

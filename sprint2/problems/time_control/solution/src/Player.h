@@ -18,6 +18,7 @@ public:
     GameSession* GetSession(){
         return session_;
     }
+    void Move(std::int64_t period);
 private:
     GameSession* session_;
     Dog* dog_;

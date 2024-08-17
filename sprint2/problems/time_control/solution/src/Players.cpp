@@ -7,6 +7,13 @@ namespace app{
         return &players_.back();
     }
 
+    void Players::Move(std::int64_t period){
+        for(auto& player : players_){
+            player.Move(period);
+        }
+    }
+
+
     // Player* Players::FindByDogIdAndMapId(std::uint64_t dog_id, std::uint64_t map_id) {
     //     if(player_index_.count({dog_id, map_id}) == 0){
     //         return nullptr;

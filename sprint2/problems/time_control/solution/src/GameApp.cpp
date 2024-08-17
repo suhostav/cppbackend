@@ -40,8 +40,8 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
     }
 }
 
-    void GameApp::Move(std::chrono::system_clock::period){
-        
+    void GameApp::Move(std::int64_t period){
+        players_.Move(period);
     }
 
 

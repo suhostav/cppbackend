@@ -38,6 +38,12 @@ public:
         dir_ = dir;
         limit_ = limit;
     }
+
+    void Stop(){
+        speed_ = {0.0, 0.0};
+    }
+
+    void Move(std::int64_t period);
     
 private:
     std::string name_;
