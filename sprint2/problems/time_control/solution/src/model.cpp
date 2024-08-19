@@ -27,15 +27,16 @@ DRectangle Road::CalcRectangle(){
     };
     start.x -= base_.width;
     start.y -= base_.height;
-    size.width += 2 * base_.width;
-    size.height += 2 * base_.height;
+    size.width += 2.0 * base_.width;
+    size.height += 2.0 * base_.height;
 
     return {start, size};
 }
 
 bool Road::Contains(DPoint p) const{
-    return (p.x > rect_.position.x && p.x < (rect_.position.x + rect_.size.width)) &&
-           (p.y > rect_.position.y && p.y < (rect_.position.y + rect_.size.height));
+    static double eps{1.e-9};
+    return (p.x > (rect_.position.x - eps) && p.x < (rect_.position.x + rect_.size.width + eps)) &&
+           (p.y > (rect_.position.y - eps) && p.y < (rect_.position.y + rect_.size.height + eps));
 }
 
 DCoord Road::GetLimit(DPoint p, DogDir dir) const{
