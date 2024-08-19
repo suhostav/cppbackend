@@ -286,8 +286,8 @@ std::string ApiHandler::ActionResponse(const StringRequest& req) const{
 }
 
 std::string ApiHandler::TickResponse(const StringRequest& req) const{
-    auto session = const_cast<model::GameSession*>(GetSession(req));
-    auto token = TryExtractToken(req);
+    // auto session = const_cast<model::GameSession*>(GetSession(req));
+    // auto token = TryExtractToken(req);
     boost::json::object req_body;
     try{
         req_body =boost::json::parse(req.body()).as_object();

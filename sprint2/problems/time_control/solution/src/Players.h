@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <deque>
 #include <vector>
 #include "Player.h"
 
@@ -15,6 +16,6 @@ public:
     Player* Add(Dog* dog_ptr, GameSession* session);
     void Move(std::int64_t period);
 private:
-    std::vector<Player> players_;
+    std::deque<Player> players_;
 };
 }   //namespace app
