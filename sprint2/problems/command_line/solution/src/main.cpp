@@ -110,7 +110,6 @@ int main(int argc, const char* argv[]) {
     //     conf_path = argv[1];
     // }
 
-    return EXIT_SUCCESS;
 
     try {
         // 1. Загружаем карту из файла и построить модель игры
