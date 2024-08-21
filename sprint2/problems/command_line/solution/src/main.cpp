@@ -160,6 +160,4 @@ int main(int argc, const char* argv[]) {
         BOOST_LOG_TRIVIAL(info) << logging::add_value(additional_data, exit_data) << "server exited"sv;
         return EXIT_FAILURE;
     }
-
 }
-
