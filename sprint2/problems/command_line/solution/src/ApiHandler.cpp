@@ -230,17 +230,6 @@ const model::GameSession* ApiHandler::GetSession(const StringRequest& req) const
     return session;
 }
 
-// std::string ApiHandler::AutorizedResponse(const std::string& req_path, std::string_view token_str) const{
-//     std::string result;
-//     if(token_str.size() == 0){
-
-//     }
-//     app::Token token{std::string(token_str)};
-//     app::Player* player = game_app_.FindPlayerByToken(token);
-
-//     return result;
-// }
-
 const model::GameSession* ApiHandler::GetSessionByToken(std::string_view token_str) const {
     app::Token token{std::string(token_str.substr(7))};
     return game_app_.GetPlayerSession(token);

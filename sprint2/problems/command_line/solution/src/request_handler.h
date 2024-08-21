@@ -70,45 +70,10 @@ private:
     using FileRequestResult = std::variant<EmptyResponse, StringResponse, FileResponse>;
     
     FileRequestResult HandleFileRequest(const StringRequest& req) const;
-    // StringResponse HandleApiRequest(const StringRequest& request) const;
     StringResponse ReportServerError(unsigned version, bool keep_alive) const;
     bool IsApiRequest(const StringRequest& request) const;
 
-    // struct ContentType {
-    //     ContentType() = delete;
-    //     constexpr static std::string_view OCTET_STREAM =   "text/html"sv;
-    //     constexpr static std::string_view TEXT_HTML =   "text/html"sv;
-    //     constexpr static std::string_view TEXT_CSS =   "text/css"sv;
-    //     constexpr static std::string_view TEXT_PLAIN =   "text/plain"sv;
-    //     constexpr static std::string_view TEXT_JAVASCRIPT =   "text/javascript"sv;
-    //     constexpr static std::string_view APPLICATION_JSON =   "application/json"sv;
-    //     constexpr static std::string_view APPLICATION_XML =   "application/xml"sv;
-    //     constexpr static std::string_view IMAGE_PNG =   "image/png"sv;
-    //     constexpr static std::string_view IMAGE_JPEG =   "image/jpeg"sv;
-    //     constexpr static std::string_view IMAGE_GIF =   "image/gif"sv;
-    //     constexpr static std::string_view IMAGE_BMP =   "image/bmp"sv;
-    //     constexpr static std::string_view IMAGE_ICO =   "image/vnd.microsoft.icon"sv;
-    //     constexpr static std::string_view IMAGE_TIFF =   "image/tiff"sv;
-    //     constexpr static std::string_view IMAGE_SVG =   "image/svg+xml"sv;
-    //     constexpr static std::string_view AUDIO_MP3 =   "audio/mpeg"sv;
-    // };
-
-    // StringResponse MakeStringResponse(http::status status,
-    //                                     std::string_view body,
-    //                                     unsigned http_version,
-    //                                     bool keep_alive,
-    //                                     std::string_view content_type = ContentType::TEXT_HTML
-    //                                     ) const;
     FileResponse MakeFileResponse(const std::string file, unsigned http_version, bool keep_alive) const;
-    // std::string MapsListResponse() const;
-    // std::pair<bool, std::string> MapResponse(const std::string& map_id) const;
-
-    // boost::json::array GetRoadsArray(const model::Map& map) const;
-    // boost::json::array GetBuildingssArray(const model::Map& map) const;
-    // boost::json::array GetOfficesArray(const model::Map& map) const;
-
-    // std::string DecodeUri(const std::string& uri_str) const;
-    // char DecodeChar(std::istream& in) const;
 
     std::string BadRequest() const;
     StringResponse NotFound(unsigned http_version, bool keep_alive) const;
@@ -116,8 +81,6 @@ private:
     fs::path root_;
     Strand api_strand_;
     std::shared_ptr<ApiHandler> api_handler_;
-    // model::Game& game_;
-    // static std::map<std::string, std::string_view> extensions_ ;
 };
 
 }  // namespace http_handler

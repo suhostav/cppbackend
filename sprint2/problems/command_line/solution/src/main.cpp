@@ -102,21 +102,6 @@ int main(int argc, const char* argv[]) {
             return EXIT_FAILURE;
         }
     }
-    // std::string static_files_root{};
-    // std::filesystem::path conf_path;
-    //===================================================
-    // if (argc != 3) {
-    //     std::filesystem::path prog{argv[0]};
-    //     prog.remove_filename();
-    //     auto static_path = prog / "../../static";
-    //     prog/= "../../data/config.json";
-    //     conf_path = prog.lexically_normal();
-    //     static_files_root = static_path.lexically_normal().string();
-    // } else {
-    //     static_files_root = argv[2];
-    //     conf_path = argv[1];
-    // }
-
 
     try {
         // 1. Загружаем карту из файла и построить модель игры
