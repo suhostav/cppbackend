@@ -67,6 +67,7 @@ public:
         std::lock_guard<std::mutex> lock(m_);
         manual_ts_ = ts;
     }
+
 private:
     std::optional<std::chrono::system_clock::time_point> manual_ts_;
     std::mutex m_;
