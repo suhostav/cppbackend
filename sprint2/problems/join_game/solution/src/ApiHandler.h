@@ -1,0 +1,51 @@
+#pragma once
+
+#define BOOST_BEAST_USE_STD_STRING_VIEW
+#include "handlers_tools.h"
+// #include "PlayerTokens.h"
+#include "Dog.h"
+#include "GameApp.h"
+
+namespace http_handler {
+
+using StringResponse = http::response<http::string_body>;
+using StringRequest = http::request<http::string_body>;
+
+class ApiHandler {
+public:
+    ApiHandler(app::GameApp& game_app) : game_app_(game_app){
+    }
+
+    // bool IsApiRequest(const StringRequest& request) const;
+    bool IsGetRequest(const StringRequest& req) const{
+        return req.method_string() == handlers_statics::GET_STR;
+    }
+    bool IsHeadRequest(const StringRequest& req) const{
+        return req.method_string() == handlers_statics::HEAD_STR;
+    }
+    bool IsGetOrHeadRequest(const StringRequest& req) const{
+        return IsGetRequest(req) || IsHeadRequest(req);
+    }
+    bool IsPostRequest(const StringRequest& req) const{
+        return req.method_string() == handlers_statics::POST_STR;
+    }
+    StringResponse HandleApiRequest(const StringRequest& request) const;
+    StringResponse DoHandleApiRequest(const StringRequest& request) const;
+
+private:
+    boost::json::array GetRoadsArray(const model::Map& map) const;
+    boost::json::array GetBuildingssArray(const model::Map& map) const;
+    boost::json::array GetOfficesArray(const model::Map& map) const;
+
+    std::string MapsListResponse() const;
+    std::pair<bool, std::string> MapResponse(const std::string& map_id) const;
+    std::string BadRequest() const;
+    std::string JoinGameResponse(std::string_view dog_name, std::string_view map_id) const;
+    std::string AutorizedResponse(const std::string& req_path, std::string_view token_str) const;
+    const model::GameSession* GetSessionByToken(std::string_view token_str) const;
+    std::string PlayersResponse(const model::GameSession* session) const;
+
+    app::GameApp& game_app_;
+};
+
+} //namespace http_handler
