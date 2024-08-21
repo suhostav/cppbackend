@@ -295,6 +295,9 @@ std::string ApiHandler::ActionResponse(const StringRequest& req) const{
 }
 
 std::string ApiHandler::TickResponse(const StringRequest& req) const{
+    if(!test_mode_){
+        throw BadRequestException("badRequest", "Invalid endpoint");
+    }
     boost::json::object req_body;
     try{
         req_body =boost::json::parse(req.body()).as_object();

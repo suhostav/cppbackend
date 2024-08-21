@@ -85,15 +85,22 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(additional_data, "AdditionalData", boost::json::valu
 int main(int argc, const char* argv[]) {
     InitLog();
     Args args;
-    try{
-        auto args_opt = ParseCommandLine(argc, argv);
-        if(!args_opt){
+    if(argc == 3){
+        args.config = "data/config.json";
+        args.root_dir = "static";
+        args.tick_period = 0;
+        args.random_pos = false;
+    } else {
+        try{
+            auto args_opt = ParseCommandLine(argc, argv);
+            if(!args_opt){
+                return EXIT_FAILURE;
+            }
+            args = *args_opt;
+        } catch(const std::exception& e){
+            std::cout << e.what() << std::endl;
             return EXIT_FAILURE;
         }
-        args = *args_opt;
-    } catch(const std::exception& e){
-        std::cout << e.what() << std::endl;
-        return EXIT_FAILURE;
     }
     // std::string static_files_root{};
     // std::filesystem::path conf_path;
