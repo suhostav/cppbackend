@@ -50,7 +50,7 @@ public:
 
 
 private:
-    boost::json::array GetRoadsArray(const model::Map& map) const;
+    static boost::json::array GetRoadsArray(const model::Map& map);
     boost::json::array GetBuildingssArray(const model::Map& map) const;
     boost::json::array GetOfficesArray(const model::Map& map) const;
 

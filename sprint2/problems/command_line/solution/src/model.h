@@ -132,21 +132,21 @@ public:
 
     Map(Id id, std::string name, double speed) noexcept;
 
-    const Id& GetId() const noexcept ;
+    const Id& GetId() const noexcept;
 
-    const std::string& GetName() const noexcept ;
+    const std::string& GetName() const noexcept;
 
-    double GeSpeed() const noexcept ;
+    double GeSpeed() const noexcept;
 
-    const Buildings& GetBuildings() const noexcept ;
+    const Buildings& GetBuildings() const noexcept;
 
-    const Roads& GetRoads() const noexcept ;
+    const Roads& GetRoads() const noexcept;
 
-    const Offices& GetOffices() const noexcept ;
+    const Offices& GetOffices() const noexcept;
 
-    void AddRoad(const Road& road) ;
+    void AddRoad(const Road& road);
 
-    void AddBuilding(const Building& building) ;
+    void AddBuilding(const Building& building);
 
     void AddOffice(Office office);
 

@@ -39,9 +39,8 @@ namespace http_handler {
         file_path = fs::weakly_canonical(file_path);
         response.version(http_version);
         std::string file_ext{file_path.extension()};
-        std::for_each(file_ext.begin(), file_ext.end(), [](char& c){ c = (char)tolower(c);});
+        std::for_each(file_ext.begin(), file_ext.end(), [](char& c){ c = static_cast<char>(tolower(c));});
         http::file_body::value_type file;
-        // std::cout << "requested file: " << file_path.c_str() << ", file extension: " << file_ext << std::endl;
         if (beast::error_code ec; file.open(file_path.c_str(), beast::file_mode::read, ec), ec) {
             throw std::runtime_error("Failed to open file "s + file_name);
         }

@@ -14,7 +14,9 @@ public:
         , point_(p)
         , id_{next_id_++} {
     }
-    std::uint64_t GetId(){return id_;}
+
+    std::uint64_t GetId() const {return id_;}
+
     const std::string& GetName() const {
         return name_;
     }
@@ -49,8 +51,8 @@ public:
     
 private:
     std::string name_;
-    std::uint64_t id_;
     DPoint point_;
+    std::uint64_t id_;
     DogSpeed speed_ = {0.0, 0.0};
     DogDir dir_ = {DogDir::NORTH};
     DCoord limit_ = 0.0;

@@ -18,7 +18,7 @@ struct JoinInfo{
 
 class GameApp {
 public:
-    GameApp(model::Game& game): game_(game){
+    explicit GameApp(model::Game& game): game_(game){
     }
 
     const Map* FindMap(const Map::Id& id) const noexcept {

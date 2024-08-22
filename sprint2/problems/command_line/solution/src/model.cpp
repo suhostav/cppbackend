@@ -18,12 +18,12 @@ Coord Road::GetLength() const {
 
 DRectangle Road::CalcRectangle(){
     DPoint start { 
-        start_.x > end_.x ? (double)end_.x: (double)start_.x,
-        start_.y > end_.y ? (double)end_.y : (double)start_.y
+        start_.x > end_.x ? static_cast<double>(end_.x): static_cast<double>(start_.x),
+        start_.y > end_.y ? static_cast<double>(end_.y) : static_cast<double>(start_.y)
     };
     DSize size {
-        start_.x > end_.x ? (double)start_.x - end_.x : (double)end_.x - start_.x,
-        start_.y > end_.y ? (double)start_.y - end_.y : (double)end_.y - start_.y
+        start_.x > end_.x ? static_cast<double>(start_.x) - end_.x : static_cast<double>(end_.x) - start_.x,
+        start_.y > end_.y ? static_cast<double>(start_.y) - end_.y : static_cast<double>(end_.y) - start_.y
     };
     start.x -= base_.width;
     start.y -= base_.height;

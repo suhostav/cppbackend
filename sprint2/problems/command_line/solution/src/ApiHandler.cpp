@@ -7,7 +7,7 @@ namespace http_handler {
     std::string ApiHandler::MapsListResponse() const{
         auto maps = game_app_.GetMaps();
         boost::json::array jbody;
-        for(model::Map map : maps){
+        for(const model::Map& map : maps){
             boost::json::object jmap;
             jmap["id"] = *map.GetId();
             jmap["name"] = map.GetName();
@@ -39,7 +39,7 @@ namespace http_handler {
         }
     }
 
-    boost::json::array ApiHandler::GetRoadsArray(const model::Map& map) const{
+    boost::json::array ApiHandler::GetRoadsArray(const model::Map& map) {
         boost::json::array jroads;
         const auto roads = map.GetRoads();
         for(const auto& road : roads){
@@ -270,13 +270,9 @@ std::string ApiHandler::ActionResponse(const StringRequest& req) const{
     auto token = TryExtractToken(req);
     boost::json::object req_body;
     req_body = boost::json::parse(req.body()).as_object();
-    // try{
-    //     req_body = boost::json::parse(req.body()).as_object();
-    // }catch(...){
-    //     throw BadRequestException("invalidArgument", "Failed to parse action request JSON");
-    // }
     char dir = (char)toupper(req_body["move"].as_string()[0]);
-    if(!(dir == 'U' || dir == 'D' || dir == 'L' || dir == 'R')){
+    bool valid_dir = (dir == 'U' || dir == 'D' || dir == 'L' || dir == 'R');
+    if(!valid_dir){
         throw BadRequestException("InvalidDirection","Invalid Direction");
     }
     game_app_.SetPlayerSpeed(*token, session, dir);
@@ -289,8 +285,8 @@ std::string ApiHandler::TickResponse(const StringRequest& req) const{
     }
     boost::json::object req_body;
     try{
-        req_body =boost::json::parse(req.body()).as_object();
-    } catch(...){
+        req_body = boost::json::parse(req.body()).as_object();
+    } catch(const std::exception& ){
         throw BadRequestException("invalidArgument", "Failed to parse tick request JSON");
     }
     if(!req_body.contains("timeDelta") || !req_body["timeDelta"].is_int64()){
