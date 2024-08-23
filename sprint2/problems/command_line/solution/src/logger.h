@@ -10,8 +10,16 @@
 #include <mutex>
 #include <syncstream>
 #include <thread>
+#include <boost/date_time.hpp>
+#include <boost/json.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/manipulators/add_value.hpp>
 
 using namespace std::literals;
+namespace logging = boost::log;
+namespace keywords = boost::log::keywords;
 
 #define LOG(...) Logger::GetInstance().Log(__VA_ARGS__)
 
@@ -72,3 +80,7 @@ private:
     std::optional<std::chrono::system_clock::time_point> manual_ts_;
     std::mutex m_;
 };
+
+
+void JsonFormatter(logging::record_view const& rec, logging::formatting_ostream& strm);
+void InitLog();
