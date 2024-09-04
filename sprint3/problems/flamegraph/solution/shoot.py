@@ -55,7 +55,7 @@ def make_shots():
 server = run(start_server())
 # subprocess.run(['sleep', '0.1'])
 # perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
-perf_str = 'sudo perf record -g -o perf.data -p ' + str(server.pid)
+perf_str = 'sudo perf record -g -o perf.data -p ' + str(server.pid) + " sleep 11"
 
 # perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
 # perf = subprocess.Popen(perf_str, close_fds=True)
@@ -67,7 +67,7 @@ make_shots()
 stop(server)
 time.sleep(1)
 stop(perf,True)
-perf.wait()
+# perf.wait()
 time.sleep(1)
 print('make graph.svg')
 output = subprocess.check_output('sudo perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl > graph.svg', shell=True)
