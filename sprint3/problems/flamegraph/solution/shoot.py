@@ -61,6 +61,7 @@ perf = subprocess.Popen(perf_str, close_fds=True)
 make_shots()
 
 stop(server)
+time.sleep(1)
 stop(perf,True)
 perf.wait()
 time.sleep(1)
