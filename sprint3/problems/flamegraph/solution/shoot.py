@@ -62,7 +62,7 @@ make_shots()
 
 stop(server)
 stop(perf,True)
-# perf.wait()
+perf.wait()
 time.sleep(1)
 print('make graph.svg')
 output = subprocess.check_output('sudo perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl > graph.svg', shell=True)
