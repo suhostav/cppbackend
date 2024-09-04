@@ -52,11 +52,12 @@ def make_shots():
     print('Shooting complete')
 
 
-server = run_server(start_server())
+server = run(start_server())
 subprocess.run(['sleep', '0.1'])
 perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
 # perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
-perf = subprocess.Popen(perf_str, close_fds=True)
+# perf = subprocess.Popen(perf_str, close_fds=True)
+perf = subprocess.Popen(perf_str)
 
 make_shots()
 
