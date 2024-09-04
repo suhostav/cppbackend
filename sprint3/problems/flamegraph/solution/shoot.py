@@ -28,9 +28,9 @@ def run(command, output=None):
     process = subprocess.Popen(shlex.split(command), stdout=output, stderr=subprocess.DEVNULL)
     return process
 
-def run_server(command, output=None):
-    process = subprocess.Popen(shlex.split(command), stdout=output, stderr=subprocess.DEVNULL, close_fds=True)
-    return process
+# def run_server(command, output=None):
+#     process = subprocess.Popen(shlex.split(command), stdout=output, stderr=subprocess.DEVNULL, close_fds=True)
+#     return process
 
 
 def stop(process, wait=False):
@@ -53,11 +53,14 @@ def make_shots():
 
 
 server = run(start_server())
-subprocess.run(['sleep', '0.1'])
-perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
+# subprocess.run(['sleep', '0.1'])
+# perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
+perf_str = 'sudo perf record -g -o perf.data -p ' + str(server.pid)
+
 # perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
 # perf = subprocess.Popen(perf_str, close_fds=True)
-perf = subprocess.Popen(perf_str)
+# perf = subprocess.Popen(perf_str)
+perf = run(perf_str)
 
 make_shots()
 
