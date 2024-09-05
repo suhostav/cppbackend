@@ -53,9 +53,9 @@ def make_shots():
 
 
 server = run(start_server())
-subprocess.run(['sleep', '0.1'])
+time.sleep(1)
 # perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
-perf_str = 'sudo perf record -g -o perf.data -p ' + str(server.pid) + ' sleep 5'
+perf_str = 'sudo perf record -o perf.data -g -p ' + str(server.pid) + ' sleep 5'
 
 # perf_str = ['sudo', 'perf', 'record', '-g', '-o', 'perf.data', '-p', str(server.pid)]
 perf = subprocess.Popen(shlex.split(perf_str), close_fds=True)
