@@ -55,7 +55,7 @@ DCoord Road::GetLimit(DPoint p, DogDir dir) const{
 }
 
 // ============= Map methods -----------------------------------
-    Map::Map(Id id, std::string name, double speed) noexcept
+    Map::Map(Id id, std::string name, double speed)
         : id_(std::move(id))
         , name_(std::move(name))
         , map_speed_(speed) {
@@ -91,6 +91,10 @@ DCoord Road::GetLimit(DPoint p, DogDir dir) const{
 
     void Map::AddBuilding(const Building& building) {
         buildings_.emplace_back(building);
+    }
+
+    void Map::AddLootType(const LootType& loot_type) {
+        loot_types_.emplace_back(loot_type);
     }
 
 void Map::AddOffice(Office office) {
@@ -178,23 +182,23 @@ DCoord Map::GetLimit(DPoint p, DogDir dir) const{
     }   
 }
 
-// DPoint Map::GetRandomPoint() const{
-//     DPoint road_point{0.0, 0.0};
+DPoint Map::GetRandomPoint(std::random_device& rd) const{
+    DPoint road_point{0.0, 0.0};
 //     // choose road
-//     size_t n_roads = GetRoads().size();
-//     std::uniform_int_distribution<std::mt19937_64::result_type> dist_roads(0, n_roads - 1);
-//     size_t road_index = dist_roads(random_device_);
-//     const Road& road = GetRoads()[road_index];
-//     // choose point on road
-//     Coord length = road.GetLength();
-//     //если length в метрах, то ставим точку с точностью до сантиметра
-//     std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, length * 100);
-//     DCoord road_shift = dist_length(random_device_) / 100.;
-//     road_point = road.IsVertical() ? DPoint{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
-//         : DPoint{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
+    size_t n_roads = GetRoads().size();
+    std::uniform_int_distribution<std::mt19937_64::result_type> dist_roads(0, n_roads - 1);
+    size_t road_index = dist_roads(rd);
+    const Road& road = GetRoads()[road_index];
+    // choose point on road
+    Coord length = road.GetLength();
+    //если length в метрах, то ставим точку с точностью до сантиметра
+    std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, length * 100);
+    DCoord road_shift = dist_length(rd) / 100.;
+    road_point = road.IsVertical() ? DPoint{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
+        : DPoint{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
 
-//     return road_point;
-// }
+    return road_point;
+}
 //-------------- GameSession -----------------------------------
 
 GameSession::GameSession(model::Map* map, bool random_point)
@@ -206,19 +210,19 @@ Dog* GameSession::AddDog(std::string_view dog_name){
     // DPoint p{0, 0};
     DPoint road_point{0.0, 0.0};
     if(random_point_) {
-        // road_point = map_->GetRandomPoint();
-        // choose road
-        size_t n_roads = map_->GetRoads().size();
-        std::uniform_int_distribution<std::mt19937_64::result_type> dist_roads(0, n_roads - 1);
-        size_t road_index = dist_roads(random_device_);
-        const Road& road = map_->GetRoads()[road_index];
-        // choose point on road
-        Coord length = road.GetLength();
-        //если length в метрах, то ставим точку с точностью до сантиметра
-        std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, length * 100);
-        DCoord road_shift = dist_length(random_device_) / 100.;
-        road_point = road.IsVertical() ? DPoint{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
-            : DPoint{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
+        road_point = map_->GetRandomPoint(random_device_);
+        // // choose road
+        // size_t n_roads = map_->GetRoads().size();
+        // std::uniform_int_distribution<std::mt19937_64::result_type> dist_roads(0, n_roads - 1);
+        // size_t road_index = dist_roads(random_device_);
+        // const Road& road = map_->GetRoads()[road_index];
+        // // choose point on road
+        // Coord length = road.GetLength();
+        // //если length в метрах, то ставим точку с точностью до сантиметра
+        // std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, length * 100);
+        // DCoord road_shift = dist_length(random_device_) / 100.;
+        // road_point = road.IsVertical() ? DPoint{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
+        //     : DPoint{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
     }
     Dog& new_dog = dogs_.emplace_back(dog_name, road_point);
     dogs_by_Ids_[new_dog.GetId()] = &new_dog;

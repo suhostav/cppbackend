@@ -123,14 +123,24 @@ private:
     Offset offset_;
 };
 
+struct LootType{
+    std::string name;
+    std::string file;
+    std::string type;
+    double rotation;
+    std::string color;
+    double scale;
+};
+
 class Map {
 public:
     using Id = util::Tagged<std::string, Map>;
     using Roads = std::vector<Road>;
     using Buildings = std::vector<Building>;
     using Offices = std::vector<Office>;
+    using LootTypes = std::vector<LootType>;
 
-    Map(Id id, std::string name, double speed) noexcept;
+    Map(Id id, std::string name, double speed);
 
     const Id& GetId() const noexcept;
 
@@ -150,9 +160,11 @@ public:
 
     void AddOffice(Office office);
 
+    void AddLootType(const LootType& loot_type);
+
     DCoord GetLimit(DPoint p, DogDir dir) const;
 
-    // DPoint GetRandomPoint() const;
+    DPoint GetRandomPoint(std::random_device& rd) const;
 
 private:
     using OfficeIdToIndex = std::unordered_map<Office::Id, size_t, util::TaggedHasher<Office::Id>>;
@@ -167,6 +179,7 @@ private:
     Roads roads_;
     Buildings buildings_;
     double map_speed_;
+    LootTypes loot_types_;
     // std::random_device random_device_;
 
 

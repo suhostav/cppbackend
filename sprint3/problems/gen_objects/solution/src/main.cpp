@@ -85,7 +85,12 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(additional_data, "AdditionalData", boost::json::valu
 int main(int argc, const char* argv[]) {
     InitLog();
     Args args;
-    if(argc == 3){
+    if(argc == 1){
+        args.config = "../../data/config.json";
+        args.root_dir = "static";
+        args.tick_period = 0;
+        args.random_pos = false;
+    } else if(argc == 3){
         args.config = "data/config.json";
         args.root_dir = "static";
         args.tick_period = 0;

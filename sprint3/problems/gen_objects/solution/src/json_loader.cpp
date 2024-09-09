@@ -70,6 +70,25 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
                 {to_int(joffice.at("offsetX").as_int64()), to_int(joffice.at("offsetY").as_int64())}
             });
         }
+        auto jloot_types = jmap.at("lootTypes").as_array();
+        for(const auto& jloot_type : jloot_types){
+            double rot = 0;
+            if(jloot_type.as_object().contains("rotation")){
+                jloot_type.at("rotation").as_int64();
+            }
+            std::string color;
+            if(jloot_type.as_object().contains("color")){
+                color = jloot_type.at("color").as_string();
+            }
+            map.AddLootType(model::LootType{
+                std::string{jloot_type.at("name").as_string()},
+                std::string{jloot_type.at("file").as_string()},
+                std::string{jloot_type.at("type").as_string()},
+                rot,
+                color,
+                jloot_type.at("scale").as_double()
+            });
+        }
         game.AddMap(map);
     }
     return game;
