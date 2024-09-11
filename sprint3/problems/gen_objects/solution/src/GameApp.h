@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <unordered_map>
+#include <set>
 #include "model.h"
 #include "Player.h"
 #include "PlayerTokens.h"
@@ -43,6 +44,7 @@ private:
     model::Game& game_;
     Players players_;
     PlayerTokens player_tokens_;
+    std::set<model::GameSession*> sessions_;
     std::unordered_map<Player*, model::GameSession*> player_session_;
 
 };

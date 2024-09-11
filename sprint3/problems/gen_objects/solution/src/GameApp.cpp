@@ -14,6 +14,7 @@ JoinInfo GameApp::JoinGame(std::string_view dog_name, std::string_view map_id_st
     model::JoinResult result = game_.JoinGame(dog_name, map_id_str);
     Player* new_player = players_.Add(result.dog, result.session);
     Token token = player_tokens_.Add(*new_player);
+    sessions_.insert(result.session);
     player_session_[new_player] = result.session;
     return {new_player, result.session, token};
 }

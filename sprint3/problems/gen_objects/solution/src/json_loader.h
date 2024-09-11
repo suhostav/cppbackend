@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "model.h"
+#include "extra_data.h"
 
 namespace json_loader {
 

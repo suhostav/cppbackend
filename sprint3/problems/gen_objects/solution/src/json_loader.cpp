@@ -29,6 +29,11 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
     if(data_object.contains("defaultDogSpeed"s)){
         default_speed = data_object.at("defaultDogSpeed"s).as_double();
     }
+    if(data_object.contains("lootGeneratorConfig"s)){
+        auto jloots = data_object.at("lootGeneratorConfig");
+        game.SetLootPeriod(jloots.at("period").as_double());
+        game.SetLootProbability(jloots.at("probability").as_double());
+    }
     if(!data_object.contains("maps"s)){
         std::cout << "Error reading config\n";
         return game;
@@ -72,9 +77,9 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
         }
         auto jloot_types = jmap.at("lootTypes").as_array();
         for(const auto& jloot_type : jloot_types){
-            double rot = 0;
+            int rot = 0;
             if(jloot_type.as_object().contains("rotation")){
-                jloot_type.at("rotation").as_int64();
+                rot = static_cast<int>(jloot_type.at("rotation").as_int64());
             }
             std::string color;
             if(jloot_type.as_object().contains("color")){

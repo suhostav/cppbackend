@@ -127,7 +127,7 @@ struct LootType{
     std::string name;
     std::string file;
     std::string type;
-    double rotation;
+    int rotation;
     std::string color;
     double scale;
 };
@@ -242,6 +242,18 @@ public:
         random_point_ = random_point;
     }
     JoinResult JoinGame(std::string_view dog_name, std::string_view map_id_str);
+    void SetLootPeriod(double p){
+        loot_period_ = p;
+    }
+    void SetLootProbability(double p){
+        loot_probability_ = p;
+    }
+    double GetLootPeriod() const {
+        return loot_period_;
+    }
+    double GetLootProbability(){
+        return loot_probability_;
+    }
 private:
     int max_map_dogs_;
     using MapIdHasher = util::TaggedHasher<Map::Id>;
@@ -251,7 +263,8 @@ private:
     MapIdToIndex map_id_to_index_;
     std::unordered_map<size_t,std::deque<GameSession>> maps_sessions_;
     bool random_point_ = false;
-
+    double loot_period_ = 1000;
+    double loot_probability_ = 0;
 };
 
 }  // namespace model
