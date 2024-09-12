@@ -41,8 +41,11 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
     }
 }
 
-    void GameApp::Move(std::chrono::microseconds period){
+    void GameApp::Move(std::chrono::milliseconds period){
         players_.Move(period);
+        for(auto* session : sessions_){
+            session->GenerateLoots(period);
+        }
     }
 
 

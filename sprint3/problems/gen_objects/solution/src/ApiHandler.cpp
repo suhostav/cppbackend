@@ -28,6 +28,7 @@ namespace http_handler {
             jbody["roads"] = GetRoadsArray(*map_ptr);
             jbody["buildings"] = GetBuildingssArray(*map_ptr);
             jbody["offices"] = GetOfficesArray(*map_ptr);
+            jbody["lootTypes"] = boost::json::parse(map_ptr->GetLootTypes());
             body = boost::json::serialize(jbody);
             return {true, body};
         } else {
@@ -261,8 +262,17 @@ std::string ApiHandler::StateResponse(const model::GameSession* session) const{
         jplayers[std::to_string(dog.first)] = jplayer;
     }
     jbody["players"] = jplayers;
-
-    return /*"players: "s +*/ boost::json::serialize(jbody);
+    boost::json::object jloots;
+    int i = 0;
+    for(const auto& loot : session->GetLoots()){
+        boost::json::array jpoint{loot.second.x, loot.second.y};
+        boost::json::object jloot;
+        jloot["type"] = loot.first;
+        jloot["pos"] = jpoint;
+        jloots[std::to_string(i++)] = jloot;
+    }
+    jbody["lostObjects"] = jloots;
+    return boost::json::serialize(jbody);
 }
 
 std::string ApiHandler::ActionResponse(const StringRequest& req) const{

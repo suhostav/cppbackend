@@ -93,8 +93,9 @@ DCoord Road::GetLimit(DPoint p, DogDir dir) const{
         buildings_.emplace_back(building);
     }
 
-    void Map::AddLootType(const LootType& loot_type) {
-        loot_types_.emplace_back(loot_type);
+    void Map::AddLootType(const std::string& loot_types, int num) {
+        loot_types_ = loot_types;
+        loot_types_number_ = num;
     }
 
 void Map::AddOffice(Office office) {
@@ -201,9 +202,10 @@ DPoint Map::GetRandomPoint(std::random_device& rd) const{
 }
 //-------------- GameSession -----------------------------------
 
-GameSession::GameSession(model::Map* map, bool random_point)
+GameSession::GameSession(model::Map* map, bool random_point, loot_gen::LootGenerator::TimeInterval loot_period, double loot_probability)
     : map_(map)
-    , random_point_(random_point) {
+    , random_point_(random_point)
+    , loot_generator_(loot_period, loot_probability, [this](){return this->generator();}) {
 }
 
 Dog* GameSession::AddDog(std::string_view dog_name){
@@ -244,6 +246,26 @@ size_t GameSession::GetDogsNumber() const{
     return dogs_.size();
 }
 
+double GameSession::generator(){
+    std::uniform_int_distribution<std::mt19937_64::result_type> dist(0,1);
+
+    return dist(random_device_);
+}
+
+void GameSession::GenerateLoots(std::chrono::milliseconds period){
+    loot_gen::LootGenerator::TimeInterval n = period;
+    unsigned n_loots = loots_.size();
+    unsigned n_looters = dogs_.size();
+    unsigned new_loots_number = loot_generator_.Generate(n, n_loots, n_looters);
+    std::uniform_int_distribution<std::mt19937_64::result_type> dist(0,map_->GetLootTypesNumber() - 1);
+    for(int i = 0; i < new_loots_number; ++i){
+        LootData ld{dist(random_device_), map_->GetRandomPoint(random_device_)};
+        loots_.push_back(ld);
+    }
+}
+
+//----------------- Game methods ------------------------------------
+
 void Game::AddMap(Map map) {
     const size_t index = maps_.size();
     if (auto [it, inserted] = map_id_to_index_.emplace(map.GetId(), index); !inserted) {
@@ -273,7 +295,8 @@ JoinResult Game::JoinGame(std::string_view dog_name, std::string_view map_id_str
         }
     }
     if(!join_session){
-        join_session = &maps_sessions_[map_index].emplace_back(&maps_[map_index], random_point_);
+        join_session = &maps_sessions_[map_index]
+            .emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability());
     }
     return {join_session->AddDog(std::string(dog_name)), join_session};
 }

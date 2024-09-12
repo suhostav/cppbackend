@@ -10,6 +10,7 @@
 #include "tagged.h"
 #include "coords.h"
 #include "Dog.h"
+#include "loot_generator.h"
 
 namespace model {
 using namespace std::literals;
@@ -123,14 +124,14 @@ private:
     Offset offset_;
 };
 
-struct LootType{
-    std::string name;
-    std::string file;
-    std::string type;
-    int rotation;
-    std::string color;
-    double scale;
-};
+// struct LootType{
+//     std::string name;
+//     std::string file;
+//     std::string type;
+//     int rotation;
+//     std::string color;
+//     double scale;
+// };
 
 class Map {
 public:
@@ -138,7 +139,7 @@ public:
     using Roads = std::vector<Road>;
     using Buildings = std::vector<Building>;
     using Offices = std::vector<Office>;
-    using LootTypes = std::vector<LootType>;
+    // using LootTypes = std::vector<LootType>;
 
     Map(Id id, std::string name, double speed);
 
@@ -160,11 +161,18 @@ public:
 
     void AddOffice(Office office);
 
-    void AddLootType(const LootType& loot_type);
+    // void AddLootType(const LootType& loot_type);
+    void AddLootType(const std::string& loot_type, int num);
 
     DCoord GetLimit(DPoint p, DogDir dir) const;
 
     DPoint GetRandomPoint(std::random_device& rd) const;
+    const std::string& GetLootTypes() const {
+        return loot_types_;
+    }
+    int GetLootTypesNumber() const {
+        return loot_types_number_;
+    }
 
 private:
     using OfficeIdToIndex = std::unordered_map<Office::Id, size_t, util::TaggedHasher<Office::Id>>;
@@ -179,7 +187,9 @@ private:
     Roads roads_;
     Buildings buildings_;
     double map_speed_;
-    LootTypes loot_types_;
+    // LootTypes loot_types_;
+    std::string loot_types_;
+    int loot_types_number_ = 0;
     // std::random_device random_device_;
 
 
@@ -189,7 +199,10 @@ private:
 
 class GameSession {
 public:
-    GameSession(Map* map, bool random_point);
+    using LootData = std::pair<int, DPoint>;
+    using Loots = std::deque<LootData>;
+
+    GameSession(Map* map, bool random_point, loot_gen::LootGenerator::TimeInterval loot_period, double loot_probability);
     Dog* AddDog(std::string_view dog_name);
     Map* GetMap();
     Dog* GetDogById(std::uint64_t id) ;
@@ -197,13 +210,20 @@ public:
     const std::unordered_map<std::uint64_t, Dog*>& GetSessionDogs() const{
         return dogs_by_Ids_;
     }
-
+    void GenerateLoots(std::chrono::milliseconds period);
+    const Loots GetLoots() const {
+        return loots_;
+    }
 private:
+    double generator();
+
     std::random_device random_device_;
     std::deque<Dog> dogs_;
     std::unordered_map<std::uint64_t, Dog*> dogs_by_Ids_;
+    Loots loots_;
     Map* map_;
     bool random_point_;
+    loot_gen::LootGenerator loot_generator_;
 };
 
 struct JoinResult{
@@ -243,12 +263,12 @@ public:
     }
     JoinResult JoinGame(std::string_view dog_name, std::string_view map_id_str);
     void SetLootPeriod(double p){
-        loot_period_ = p;
+        loot_period_ = std::chrono::duration_cast<std::chrono::milliseconds>(1ms * static_cast<int>(p * 1000));
     }
     void SetLootProbability(double p){
         loot_probability_ = p;
     }
-    double GetLootPeriod() const {
+    loot_gen::LootGenerator::TimeInterval GetLootPeriod() const {
         return loot_period_;
     }
     double GetLootProbability(){
@@ -263,7 +283,7 @@ private:
     MapIdToIndex map_id_to_index_;
     std::unordered_map<size_t,std::deque<GameSession>> maps_sessions_;
     bool random_point_ = false;
-    double loot_period_ = 1000;
+    loot_gen::LootGenerator::TimeInterval loot_period_ = 1000s;
     double loot_probability_ = 0;
 };
 

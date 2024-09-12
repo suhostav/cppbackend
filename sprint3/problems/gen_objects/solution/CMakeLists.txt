@@ -40,6 +40,8 @@ add_executable(game_server
 	src/GameApp.cpp 
 	src/Ticker.h
 	src/extra_data.h
+	src/loot_generator.h
+	src/loot_generator.cpp 
 )
 
 target_link_libraries(game_server PRIVATE Threads::Threads CONAN_PKG::boost)
