@@ -29,6 +29,7 @@ RUN groupadd -r www && useradd -r -g www www
 USER www
 
 COPY --from=build /app/build/bin/game_server /app/
+COPY --from=build /app/build/bin/game_server_tests /app/
 COPY ./data /app/data
 COPY ./static /app/static
 
