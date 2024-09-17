@@ -196,7 +196,8 @@ DPoint Map::GetRandomPoint(std::random_device& rd) const{
     //если length в метрах, то ставим точку с точностью до сантиметра
     int sign = length >=0 ? 1 : -1;
     std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, std::abs(length) * 100);
-    DCoord road_shift = sign * dist_length(rd) / 100.;
+    DCoord road_shift = static_cast<double>(dist_length(rd));
+    road_shift = road_shift / 100. * sign;
     std::cout << "road number: " << road_index << ", length: " << length << ", shift: " << road_shift << std::endl;
     road_point = road.IsVertical() ? DPoint{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
         : DPoint{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
