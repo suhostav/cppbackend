@@ -1,6 +1,7 @@
 #include "model.h"
 
 #include <stdexcept>
+#include <iostream>
 namespace model {
 using namespace std::literals;
 
@@ -193,8 +194,10 @@ DPoint Map::GetRandomPoint(std::random_device& rd) const{
     // choose point on road
     Coord length = road.GetLength();
     //если length в метрах, то ставим точку с точностью до сантиметра
-    std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, length * 100);
-    DCoord road_shift = dist_length(rd) / 100.;
+    int sign = length >=0 ? 1 : -1;
+    std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, std::abs(length) * 100);
+    DCoord road_shift = sign * dist_length(rd) / 100.;
+    std::cout << "road number: " << road_index << ", length: " << length << ", shift: " << road_shift << std::endl;
     road_point = road.IsVertical() ? DPoint{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
         : DPoint{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
 
@@ -260,6 +263,7 @@ void GameSession::GenerateLoots(std::chrono::milliseconds period){
     std::uniform_int_distribution<std::mt19937_64::result_type> dist(0,map_->GetLootTypesNumber() - 1);
     for(int i = 0; i < new_loots_number; ++i){
         LootData ld{dist(random_device_), map_->GetRandomPoint(random_device_)};
+        std::cout << "new loot. Type: " << ld.first << ", {" << ld.second.x << "," << ld.second.y << "}\n";
         loots_.push_back(ld);
     }
 }

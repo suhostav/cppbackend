@@ -85,12 +85,12 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(additional_data, "AdditionalData", boost::json::valu
 int main(int argc, const char* argv[]) {
     InitLog();
     Args args;
-    if(argc == 1){
+/*    if(argc == 1){
         args.config = "../../data/config.json";
         args.root_dir = "static";
-        args.tick_period = 0;
+        args.tick_period = 100;
         args.random_pos = false;
-    } else if(argc == 3){
+    } else */if(argc == 3){
         args.config = "data/config.json";
         args.root_dir = "static";
         args.tick_period = 0;
@@ -149,6 +149,7 @@ int main(int argc, const char* argv[]) {
 
         //запускаем движение
         if(args.tick_period > 0){
+            // std::cout << "tick period: " << args.tick_period << std::endl;
             auto ticker = std::make_shared<Ticker>(api_strand, args.tick_period * 1ms, [&game_app](std::chrono::milliseconds delta){
                 game_app.Move(delta);
             });

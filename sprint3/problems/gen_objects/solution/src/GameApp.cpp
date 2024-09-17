@@ -1,5 +1,7 @@
 #include "GameApp.h"
 
+#include <iostream>
+
 namespace app {
 
 const model::GameSession* GameApp::GetPlayerSession(const Token token) const{
@@ -42,6 +44,7 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
 }
 
     void GameApp::Move(std::chrono::milliseconds period){
+        // std::cout << "Move: " << period.count() << std::endl;
         players_.Move(period);
         for(auto* session : sessions_){
             session->GenerateLoots(period);
