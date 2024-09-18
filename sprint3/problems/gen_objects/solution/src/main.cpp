@@ -90,12 +90,12 @@ int main(int argc, const char* argv[]) {
         args.root_dir = "static";
         args.tick_period = 100;
         args.random_pos = false;
-    } else */if(argc == 3){
+    } else if(argc == 3){
         args.config = "data/config.json";
         args.root_dir = "static";
         args.tick_period = 0;
         args.random_pos = false;
-    } else {
+    } else { */
         try{
             auto args_opt = ParseCommandLine(argc, argv);
             if(!args_opt){
@@ -106,7 +106,7 @@ int main(int argc, const char* argv[]) {
             std::cout << e.what() << std::endl;
             return EXIT_FAILURE;
         }
-    }
+    // }
 
     try {
         // 1. Загружаем карту из файла и построить модель игры
