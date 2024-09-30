@@ -203,7 +203,6 @@ public:
     using Loots = std::deque<LootData>;
 
     GameSession(Map* map, bool random_point, loot_gen::LootGenerator::TimeInterval loot_period, double loot_probability);
-    GameSession(Map* map, bool random_point, loot_gen::LootGenerator gen);
     Dog* AddDog(std::string_view dog_name);
     Map* GetMap();
     Dog* GetDogById(std::uint64_t id) ;

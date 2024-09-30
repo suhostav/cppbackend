@@ -212,13 +212,6 @@ GameSession::GameSession(model::Map* map, bool random_point, loot_gen::LootGener
     , loot_generator_(loot_period, loot_probability, [this](){return this->generator();}) {
 }
 
-GameSession::GameSession(Map* map, bool random_point, loot_gen::LootGenerator gen)
-    : map_(map)
-    , random_point_(random_point)
-    , loot_generator_(gen) {
-}
-
-
 Dog* GameSession::AddDog(std::string_view dog_name){
     // DPoint p{0, 0};
     DPoint road_point{0.0, 0.0};
