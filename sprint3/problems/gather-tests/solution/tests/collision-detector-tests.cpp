@@ -78,9 +78,9 @@ IsRangeMatcher IsRangeEqual(std::vector<GatheringEvent>&& range){
     return IsRangeMatcher{std::forward<std::vector<GatheringEvent>>(range)};
 }
 
-std::vector<GatheringEvent> FindGatherEvents(const ItemGathererProvider& provider){
-    return std::vector<GatheringEvent>{{0, 0, 0.25, 0.5}, {0, 1, 0.25, 0.75}};
-}
+// std::vector<GatheringEvent> FindGatherEvents(const ItemGathererProvider& provider){
+//     return std::vector<GatheringEvent>{{0, 0, 0.25, 0.5}, {0, 1, 0.25, 0.75}};
+// }
 
 // Напишите здесь тесты для функции collision_detector::FindGatherEvents
 SCENARIO("collision detector"){
