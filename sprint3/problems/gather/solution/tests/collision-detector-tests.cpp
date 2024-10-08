@@ -99,6 +99,7 @@ SCENARIO("collision detector"){
                 for(size_t i = 0; i < test_events.size(); ++i){
                     CHECK(events[i].gatherer_id == test_events[i].gatherer_id);
                     CHECK(events[i].item_id == test_events[i].item_id);
+                    CHECK_THAT(events[i].time, WithinAbs(test_events[i].time, EPS));
                     CHECK_THAT(events[i].sq_distance, WithinAbs(test_events[i].sq_distance, EPS));
                 }
             }
