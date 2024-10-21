@@ -304,6 +304,7 @@ bool GameSession::TakeLoot(const GatheringEvent& take_event){
     if(result){
         loots_[take_event.item_id].taken = true;
     }
+    
     return result; 
 }
 
