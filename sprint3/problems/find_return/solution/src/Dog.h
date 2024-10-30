@@ -25,9 +25,6 @@ public:
         return name_;
     }
 
-    geom::Point2D GetPoint() const {
-        return GetPoint2D();
-    }
     geom::Point2D GetPoint2D() const {
         return {point_.x, point_.y};
     }

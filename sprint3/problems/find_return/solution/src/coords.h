@@ -5,23 +5,16 @@
 
 namespace model {
 
+using namespace geom;
+
 using Dimension = int;
 using Coord = Dimension;
 using DCoord = double;
 
-using namespace geom;
 
 struct Point {
     Coord x, y;
 };
-
-// struct DPoint {
-//     DCoord x, y;
-//     operator geom::Point2D(){
-//         return {x,y};
-//     }
-// };
-
 
 struct Size {
     Dimension width, height;

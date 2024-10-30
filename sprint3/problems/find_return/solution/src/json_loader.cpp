@@ -29,7 +29,7 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
     if(data_object.contains("defaultDogSpeed"s)){
         default_speed = data_object.at("defaultDogSpeed"s).as_double();
     }
-    int default_bag_capacity = 3;
+    int default_bag_capacity = 0;
     if(data_object.contains("defaultBagCapacity"s)){
         default_bag_capacity = data_object.at("defaultBagCapacity"s).as_int64();
     }
@@ -53,8 +53,9 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
         }
         int bag_capacity = default_bag_capacity;
         if(jmap.as_object().contains("bagCapacity"s)){
-            bag_capacity = jmap.at("bagCapacity"s).as_int64();
+            map_speed = jmap.at("bagCapacity"s).as_int64();
         }
+
         model::Map map{id, name, map_speed, bag_capacity};
 
         for(const auto& jroad : jroads){

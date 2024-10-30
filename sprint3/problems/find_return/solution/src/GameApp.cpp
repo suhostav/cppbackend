@@ -4,6 +4,8 @@
 
 namespace app {
 
+using namespace collision_detector;
+
 const model::GameSession* GameApp::GetPlayerSession(const Token token) const{
     Player* player = player_tokens_.FindPlayerByToken(token);
     if(player_session_.count(player) == 0){
@@ -25,7 +27,7 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
     app::Player* player = FindPlayerByToken(token);
     auto s = session->GetMap()->GeSpeed();
     model::DogDir dog_dir = static_cast<model::DogDir>(dir);
-    DCoord limit = session->GetMap()->GetLimit(player->GetDog()->GetPoint(), dog_dir);
+    DCoord limit = session->GetMap()->GetLimit(player->GetDog()->GetPoint2D(), dog_dir);
     player->GetDog()->SetDir(dog_dir, limit);
     switch(dog_dir){
         case model::DogDir::WEST:
@@ -44,9 +46,11 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
 }
 
     void GameApp::Move(std::chrono::milliseconds period){
-        // std::cout << "Move: " << period.count() << std::endl;
+
         players_.Move(period);
         for(auto* session : sessions_){
+            session->CheckCollisions();
+            session->ClearLoots();
             session->GenerateLoots(period);
         }
     }

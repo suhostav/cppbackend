@@ -251,7 +251,7 @@ std::string ApiHandler::StateResponse(const model::GameSession* session) const{
     boost::json::object jplayers;
     const std::unordered_map<std::uint64_t, model::Dog*>& dogs = session->GetSessionDogs();
     for(auto& dog : dogs){
-        boost::json::array point{dog.second->GetPoint().x, dog.second->GetPoint().y};
+        boost::json::array point{dog.second->GetPoint2D().x, dog.second->GetPoint2D().y};
         boost::json::array speed{dog.second->GetSpeed().hs, dog.second->GetSpeed().vs};
         std::string dir_str{static_cast<char>(dog.second->GetDir())};
         boost::json::string dir{dir_str};
@@ -259,15 +259,23 @@ std::string ApiHandler::StateResponse(const model::GameSession* session) const{
         jplayer["pos"] = point;
         jplayer["speed"] = speed;
         jplayer["dir"] = dir;
+        boost::json::array jloots;
+        for(const model::Loot& loot: dog.second->GetLoots()){
+            boost::json::object jloot;
+            jloot["id"] = loot.id_;
+            jloot["type"] = loot.type_;
+            jloots.push_back(jloot);
+        }
+        jplayer["bag"] = jloots;
         jplayers[std::to_string(dog.first)] = jplayer;
     }
     jbody["players"] = jplayers;
     boost::json::object jloots;
     int i = 0;
     for(const auto& loot : session->GetLoots()){
-        boost::json::array jpoint{loot.second.x, loot.second.y};
+        boost::json::array jpoint{loot.pos_.x, loot.pos_.y};
         boost::json::object jloot;
-        jloot["type"] = loot.first;
+        jloot["type"] = loot.type_;
         jloot["pos"] = jpoint;
         jloots[std::to_string(i++)] = jloot;
     }

@@ -9,12 +9,13 @@
 
 #include "tagged.h"
 #include "coords.h"
+#include "geom.h"
 #include "Dog.h"
 #include "loot_generator.h"
+#include "collision_detector.h"
 
 namespace model {
 using namespace std::literals;
-using namespace geom;
 
 class BadMapIdException : public std::invalid_argument {
 public:
@@ -167,7 +168,7 @@ public:
 
     DCoord GetLimit(Point2D p, DogDir dir) const;
 
-    Point2D GetRandomPoint(std::random_device& rd) const;
+    geom::Point2D GetRandomPoint(std::random_device& rd) const;
     const std::string& GetLootTypes() const {
         return loot_types_;
     }
@@ -178,6 +179,8 @@ public:
     int GetBagCapacity() const {
         return bag_capacity_;
     }
+    
+
 
 private:
     using OfficeIdToIndex = std::unordered_map<Office::Id, size_t, util::TaggedHasher<Office::Id>>;
@@ -192,25 +195,77 @@ private:
     Roads roads_;
     Buildings buildings_;
     double map_speed_;
-    // LootTypes loot_types_;
+    int bag_capacity_;
     std::string loot_types_;
     int loot_types_number_ = 0;
-    int bag_capacity_;
-    // std::random_device random_device_;
 
 
     OfficeIdToIndex warehouse_id_to_index_;
     Offices offices_;
 };
 
+using namespace collision_detector;
+
 class GameSession {
 public:
-    using LootData = std::pair<int, Point2D>;
-    using Loots = std::deque<LootData>;
+    using Loots = std::deque<Loot>;
+    using Gatherers = std::vector<Gatherer>;
+    using Items = std::vector<Item>;
+    enum EventType {
+        TAKE,
+        DROP
+    };
+    using EventsWithTypes = std::vector<std::pair<EventType, GatheringEvent*>>;
+
+    class SessionItemGathererProvider: public ItemGathererProvider{
+    public:
+        SessionItemGathererProvider(GameSession& session): session_(session) {}
+        size_t ItemsCount() const override{
+            return session_.GetLoots().size();
+        }
+        Item GetItem(size_t idx) const override {
+
+            const auto& loot = session_.GetLoots().at(idx);
+            return {{loot.pos_.x, loot.pos_.y}, session_.GetLootWidth()};
+        }
+        size_t GatherersCount() const override {
+            return session_.GetDogs().size();
+        }
+        Gatherer GetGatherer(size_t idx) const override {
+            const auto& dog = session_.GetDogs().at(idx);
+            return {dog.GetPoint2D(), dog.GetPoint2D(), session_.GetDogWidth() / 2.};
+        }
+    private:
+        GameSession& session_;
+    };
+
+    class SessionOfficeGathererProvider: public ItemGathererProvider{
+    public:
+        SessionOfficeGathererProvider(GameSession& session): session_(session) {}
+        size_t ItemsCount() const override{
+            return session_.GetMap()->GetOffices().size();
+        }
+        Item GetItem(size_t idx) const override {
+            const Office& office = session_.GetMap()->GetOffices().at(idx);
+            return {{static_cast<double>(office.GetPosition().x), static_cast<double>(office.GetPosition().y)}, 
+                session_.GetOfficeWidth() / 2.0};
+        }
+        size_t GatherersCount() const override {
+            return session_.GetDogs().size();
+        }
+        Gatherer GetGatherer(size_t idx) const override {
+            const auto& dog = session_.GetDogs().at(idx);
+            return {dog.GetPoint2D(), dog.GetPoint2D(), session_.GetDogWidth() / 2.};
+        }
+    private:
+        GameSession& session_;
+    };
 
     GameSession(Map* map, bool random_point, loot_gen::LootGenerator::TimeInterval loot_period, double loot_probability);
-    GameSession(Map* map, bool random_point, loot_gen::LootGenerator gen);
     Dog* AddDog(std::string_view dog_name);
+    std::deque<Dog> GetDogs() const {
+        return dogs_;
+    }
     Map* GetMap();
     Dog* GetDogById(std::uint64_t id) ;
     size_t GetDogsNumber() const;
@@ -221,16 +276,31 @@ public:
     const Loots GetLoots() const {
         return loots_;
     }
+    //------------обработка коллизий ----------------
+    void SetWidth(double dog_width, double loot_width, double office_width); 
+    double GetDogWidth() const { return dog_width_; }
+    double GetLootWidth() const { return loot_width_; }
+    double GetOfficeWidth() const { return office_width_; }
+    void CheckCollisions();
+    void ClearLoots();
 private:
     double generator();
-
+    EventsWithTypes CreateSortedEventsList();
+    bool TakeLoot(const GatheringEvent& take_event);
+    void DropLoots(const GatheringEvent& drop_event);
     std::random_device random_device_;
     std::deque<Dog> dogs_;
+    double dog_width_ = default_dog_width;
+    double loot_width_ = default_loot_width;
+    double office_width_ = default_office_width;
     std::unordered_map<std::uint64_t, Dog*> dogs_by_Ids_;
     Loots loots_;
     Map* map_;
     bool random_point_;
     loot_gen::LootGenerator loot_generator_;
+    inline static double default_dog_width = 0.6;
+    inline static double default_loot_width = 0.0;
+    inline static double default_office_width = 0.5;
 };
 
 struct JoinResult{

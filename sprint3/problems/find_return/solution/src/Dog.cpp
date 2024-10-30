@@ -46,7 +46,6 @@ bool Dog::AddLoot(Loot& loot){
         return false;
     }
     loots_.push_back(loot);
-    loot.taken = true;
     return true;
 }
 

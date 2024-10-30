@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <unordered_set>
 namespace model {
 using namespace std::literals;
 
@@ -185,8 +186,8 @@ DCoord Map::GetLimit(Point2D p, DogDir dir) const{
     }   
 }
 
-Point2D Map::GetRandomPoint(std::random_device& rd) const{
-    Point2D road_point{0.0, 0.0};
+geom::Point2D Map::GetRandomPoint(std::random_device& rd) const{
+    geom::Point2D road_point{0.0, 0.0};
 //     // choose road
     size_t n_roads = GetRoads().size();
     std::uniform_int_distribution<std::mt19937_64::result_type> dist_roads(0, n_roads - 1);
@@ -199,9 +200,9 @@ Point2D Map::GetRandomPoint(std::random_device& rd) const{
     std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, std::abs(length) * 100);
     DCoord road_shift = static_cast<double>(dist_length(rd));
     road_shift = road_shift / 100. * sign;
-    std::cout << "road number: " << road_index << ", length: " << length << ", shift: " << road_shift << std::endl;
-    road_point = road.IsVertical() ? Point2D{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
-        : Point2D{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
+    // std::cout << "road number: " << road_index << ", length: " << length << ", shift: " << road_shift << std::endl;
+    road_point = road.IsVertical() ? geom::Point2D{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
+        : geom::Point2D{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
 
     return road_point;
 }
@@ -212,13 +213,6 @@ GameSession::GameSession(model::Map* map, bool random_point, loot_gen::LootGener
     , random_point_(random_point)
     , loot_generator_(loot_period, loot_probability, [this](){return this->generator();}) {
 }
-
-GameSession::GameSession(Map* map, bool random_point, loot_gen::LootGenerator gen)
-    : map_(map)
-    , random_point_(random_point)
-    , loot_generator_(gen) {
-}
-
 
 Dog* GameSession::AddDog(std::string_view dog_name){
     // DPoint p{0, 0};
@@ -259,12 +253,72 @@ void GameSession::GenerateLoots(std::chrono::milliseconds period){
     unsigned new_loots_number = loot_generator_.Generate(n, n_loots, n_looters);
     std::uniform_int_distribution<std::mt19937_64::result_type> dist(0,map_->GetLootTypesNumber() - 1);
     for(int i = 0; i < new_loots_number; ++i){
-        LootData ld{dist(random_device_), map_->GetRandomPoint(random_device_)};
-        // std::cout << "new loot. Type: " << ld.first << ", {" << ld.second.x << "," << ld.second.y << "}\n";
-        loots_.push_back(ld);
+        loots_.emplace_back(Loot::next_id_++, dist(random_device_), map_->GetRandomPoint(random_device_));
     }
 }
 
+void GameSession::SetWidth(double dog_width, double loot_width, double office_width){
+    dog_width_ = dog_width;
+    loot_width_ = loot_width;
+    office_width_ = office_width;
+}
+
+GameSession::EventsWithTypes GameSession::CreateSortedEventsList(){
+    SessionItemGathererProvider take_provider(*this);
+    std::vector<GatheringEvent> take_events = FindGatherEvents(take_provider);
+    SessionOfficeGathererProvider drop_provider(*this);
+    std::vector<GatheringEvent> drop_events = FindGatherEvents(drop_provider);
+    EventsWithTypes all_events;
+    all_events.reserve(take_events.size() + drop_events.size());
+    for(size_t i = 0; i < take_events.size(); ++i){
+        all_events.push_back({TAKE, &take_events[i]});
+    }
+    for(size_t i = 0; i < drop_events.size(); ++i){
+        all_events.push_back({DROP, &drop_events[i]});
+    }
+    std::sort(all_events.begin(), all_events.end(), 
+        [](const std::pair<EventType, GatheringEvent*>& l, const std::pair<EventType, GatheringEvent*>& r){
+        return l.second->time < r.second->time;
+    });
+    return all_events;
+}
+
+void GameSession::CheckCollisions(){
+    EventsWithTypes all_events = CreateSortedEventsList();
+
+    for(const std::pair<EventType, GatheringEvent*>& event : all_events){
+        if(event.first == TAKE){
+            TakeLoot(*event.second);
+        } else if(event.first == DROP){
+            DropLoots(*event.second);
+        } else {
+            throw std::logic_error("CheckCollision: invalid event type."s);
+        }
+    }
+}
+
+bool GameSession::TakeLoot(const GatheringEvent& take_event){
+
+    auto& dog = dogs_[take_event.gatherer_id];
+    bool result = dog.AddLoot(loots_[take_event.item_id]);
+    if(result){
+        loots_[take_event.item_id].taken = true;
+    }
+    
+    return result; 
+}
+
+void GameSession::DropLoots(const GatheringEvent& drop_event){
+    dogs_[drop_event.gatherer_id].DropLoots();
+}
+
+void GameSession::ClearLoots(){
+    if(loots_.size() > 0) {
+        loots_.erase(std::remove_if(loots_.begin(), loots_.end(), [](const Loot& loot){
+            return loot.taken;
+        }));
+    }
+}
 //----------------- Game methods ------------------------------------
 
 void Game::AddMap(Map map) {
@@ -298,6 +352,7 @@ JoinResult Game::JoinGame(std::string_view dog_name, std::string_view map_id_str
     if(!join_session){
         join_session = &maps_sessions_[map_index]
             .emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability());
+        join_session->SetWidth(0.6, 0, 0.5);
     }
     return {join_session->AddDog(std::string(dog_name)), join_session};
 }

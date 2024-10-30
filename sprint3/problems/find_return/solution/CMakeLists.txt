@@ -9,20 +9,6 @@ conan_basic_setup(TARGETS)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-# -------- создаем статическую библиотеку ----------
-add_library(ModelLib STATIC 
-	src/model.h
-	src/model.cpp
-	src/Dog.h
-	src/Dog.cpp
-	src/loot_generator.h
-	src/loot_generator.cpp
-	src/tagged.h
-)
-target_include_directories(ModelLib PUBLIC ${ZLIB_INCLUDES} ${BOOST_INCLUDES})
-target_link_libraries(ModelLib PUBLIC ${BOOST_LIB} ${ZLIB_LIB})
-
-
 add_executable(game_server
 	src/logger.h
 	src/logger.cpp
@@ -30,6 +16,11 @@ add_executable(game_server
 	src/http_server.cpp
 	src/http_server.h
 	src/sdk.h
+	src/geom.h
+	src/coords.h
+	src/model.h
+	src/model.cpp
+	src/tagged.h
 	src/boost_json.cpp
 	src/json_loader.h
 	src/json_loader.cpp
@@ -39,6 +30,8 @@ add_executable(game_server
 	src/ApiHandler.cpp 
 	src/handlers_tools 
 	src/handlers_tools.cpp
+	src/Dog.h 
+	src/Dog.cpp 
 	src/Player.h 
 	src/Player.cpp 
 	src/Players.h 
@@ -50,23 +43,28 @@ add_executable(game_server
 	src/Ticker.h
 	src/extra_data.h
 	src/loot.h
-	src/collision_detector.h 
+	src/loot_generator.h
+	src/loot_generator.cpp 
+	src/collision_detector.h
 	src/collision_detector.cpp
 )
 
-target_include_directories(game_server PRIVATE  CONAN_PKG::boost)
-target_link_libraries(game_server PRIVATE Threads::Threads CONAN_PKG::boost ModelLib)
+target_link_libraries(game_server PRIVATE Threads::Threads CONAN_PKG::boost)
 
 add_executable(game_server_tests
-	src/model.h 
-	src/model.cpp 
-	src/loot_generator.h 
-	src/loot_generator.cpp 
-	src/tagged.h 
+    src/model.h
+    src/model.cpp
+	src/loot.h
+	src/Dog.h
+	src/Dog.cpp
+    src/loot_generator.h
+    src/loot_generator.cpp
+	src/collision_detector.h
+	src/collision_detector.cpp
+    src/tagged.h
     tests/model-tests.cpp
     tests/loot_generator_tests.cpp
-	src/collision_detector.h 
-	src/collision_detector.cpp
 )
 target_include_directories(game_server_tests PRIVATE  CONAN_PKG::boost)
-target_link_libraries(game_server_tests PRIVATE CONAN_PKG::catch2 CONAN_PKG::boost Threads::Threads ModelLib) 
+target_link_libraries(game_server_tests PRIVATE CONAN_PKG::catch2 CONAN_PKG::boost Threads::Threads) 
+ 
