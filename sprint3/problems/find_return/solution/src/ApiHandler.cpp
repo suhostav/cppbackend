@@ -286,7 +286,7 @@ std::string ApiHandler::StateResponse(const model::GameSession* session) const{
 std::string ApiHandler::ActionResponse(const StringRequest& req) const{
     auto session = const_cast<model::GameSession*>(GetSession(req));
     auto token = TryExtractToken(req);
-    boost::json::object req_body;
+    boost::json::object req_body; 
     req_body = boost::json::parse(req.body()).as_object();
     char dir = (char)toupper(req_body["move"].as_string()[0]);
     bool valid_dir = (dir == 'U' || dir == 'D' || dir == 'L' || dir == 'R');
