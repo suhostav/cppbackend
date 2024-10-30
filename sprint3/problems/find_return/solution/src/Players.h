@@ -15,7 +15,7 @@ public:
     Players() = default;
 
     Player* Add(Dog* dog_ptr, GameSession* session);
-    void Move(std::chrono::microseconds period);
+    void Move(std::chrono::milliseconds period);
 private:
     std::deque<Player> players_;
 };

@@ -7,7 +7,7 @@ namespace app{
         return &players_.back();
     }
 
-    void Players::Move(std::chrono::microseconds period){
+    void Players::Move(std::chrono::milliseconds period){
         for(auto& player : players_){
             player.Move(period);
         }

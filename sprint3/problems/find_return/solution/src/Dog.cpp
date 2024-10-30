@@ -3,7 +3,7 @@
 namespace model {
 std::uint64_t Dog::next_id_ = 0;
 
-void Dog::Move(std::chrono::microseconds period){
+void Dog::Move(std::chrono::milliseconds period){
     double seconds = static_cast<double>(period.count()) / 1000.;
     switch (dir_)
     {

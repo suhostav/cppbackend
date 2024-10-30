@@ -87,8 +87,8 @@ int main(int argc, const char* argv[]) {
     Args args;
     if(argc == 1){
         args.config = "../../data/config.json";
-        args.root_dir = "static";
-        args.tick_period = 100;
+        args.root_dir = "../../static";
+        args.tick_period = 0;
         args.random_pos = false;
     } else if(argc == 3){
         args.config = "data/config.json";

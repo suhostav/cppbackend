@@ -51,7 +51,7 @@ public:
         speed_ = {0.0, 0.0};
     }
 
-    void Move(std::chrono::microseconds period);
+    void Move(std::chrono::milliseconds period);
     bool AddLoot(Loot& loot);
     void DropLoots();
     const std::vector<Loot>& GetLoots() const{

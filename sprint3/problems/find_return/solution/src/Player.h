@@ -19,7 +19,7 @@ public:
     GameSession* GetSession(){
         return session_;
     }
-    void Move(std::chrono::microseconds period);
+    void Move(std::chrono::milliseconds period);
 private:
     GameSession* session_;
     Dog* dog_;
