@@ -316,7 +316,7 @@ void GameSession::ClearLoots(){
     if(loots_.size() > 0) {
         loots_.erase(std::remove_if(loots_.begin(), loots_.end(), [](const Loot& loot){
             return loot.taken;
-        }));
+        }), loots_.end());
     }
 }
 //----------------- Game methods ------------------------------------
