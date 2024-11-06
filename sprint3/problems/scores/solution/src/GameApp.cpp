@@ -43,6 +43,7 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
             player->GetDog()->SetSpeed(0, s);
             break;
     }
+    
 }
 
     void GameApp::Move(std::chrono::milliseconds period){
