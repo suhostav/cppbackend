@@ -282,7 +282,6 @@ GameSession::EventsWithTypes GameSession::CreateSortedEventsList(){
         return l.second.time < r.second.time;
     });
     return all_events;
-    
 }
 
 void GameSession::CheckCollisions(){
