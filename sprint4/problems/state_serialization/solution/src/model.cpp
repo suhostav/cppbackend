@@ -377,7 +377,7 @@ GameSession* Game::CreateSession(std::string map_id_str){
     Map::Id map_id{std::string(map_id_str)};
     size_t map_index = GetMapIndex(map_id);
     std::deque<GameSession>& map_sessions = maps_sessions_[map_index];
-    GameSession* session =& map_sessions.emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability());
+    GameSession* session = &map_sessions.emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability());
     return session;
 }
 

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <boost/serialization/vector.hpp>
 
@@ -82,7 +83,7 @@ public:
         , direction_(dog.GetDir())
         , limit_(dog.GetLimit())
         , score_(dog.GetScore())
-        , bag_content_(std::move(CreateBagRepr(dog.GetBagContent()))) {
+        , bag_content_(CreateBagRepr(dog.GetBagContent())) {
     }
 
     [[nodiscard]] model::Dog Restore() const {
@@ -139,7 +140,8 @@ public:
         , loot_width_(session.GetLootWidth())
         , office_width_(session.GetOfficeWidth())
         , map_id_(*(session.GetMap()->GetId()))
-        , dogs_(GetDogsRepr(session)){
+        , dogs_(GetDogsRepr(session))
+        , loots_(GetLootsRepr(session)){
 
     }
     std::vector<DogRepr> GetDogsRepr(const model::GameSession& session){
@@ -160,12 +162,21 @@ public:
 
     template <typename Archive>
     void serialize(Archive& ar, [[maybe_unused]] const unsigned version) {
-        ar& random_point_;
+        // std::cout << "\tStart sessions serializing...\n";
+        // std::cout << "\t\trandon_point = " << (random_point_ == true?"true":"false");
+        // ar& random_point_;
+        // std::cout << "\t\t, dog_width_ = " << dog_width_;
         ar& dog_width_;
+        // std::cout << "\t\t, loot_width_ = " << loot_width_;
         ar& loot_width_;
+        // std::cout << "\t\t, office_width_ = " << office_width_;
         ar& office_width_;
+        // std::cout << "\t\t, map_id_ = " << map_id_;
         ar& map_id_;
+        // std::cout << "\tStart dogs serializing...\n";
         ar& dogs_;
+        // std::cout << "\tStart loots serializing...\n";
+        ar& loots_;
     }
 
     const std::string GetMapId() const {
@@ -187,6 +198,7 @@ public:
     double office_width_;
     std::string map_id_;
     std::vector<DogRepr> dogs_;
+    std::vector<LootRepr> loots_;
 };
 
 class TokenRepr{

@@ -91,6 +91,7 @@ int main(int argc, const char* argv[]) {
     if(argc == 1){
         args.config = "../../data/config.json";
         args.root_dir = "../../static";
+        args.tick_period = 200;
         args.save_file = "../../data/saved_data.txt";
         args.save_period = 3000;
     } else if(argc == 3){

@@ -69,6 +69,7 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
         if(time_from_save_ < save_period_){
             return false;
         }
+        time_from_save_ = 0ms;
         return Save(err_msg);
         
     }
@@ -78,25 +79,28 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
             std::string tmp_file_name{"game_server.tmp"};
             std::ofstream out(tmp_file_name, std::ios_base::trunc);
             boost::archive::text_oarchive oa{out};
-            oa << sessions_.size();
+            std::vector<serialization::SessionRepr> srs;
             for(const auto& session : sessions_){
-                serialization::SessionRepr sr{*session};
-                oa << sr;
+                // std::cout << "Saving session: " << session << std::endl;
+                srs.emplace_back(*session);
             }
+            // std::cout << "Start saving ...\n";
+            oa << srs;
+            // std::cout << "sessions serialized.\n";
             std::vector<serialization::TokenRepr>tokens;
             for(const auto& tk : player_tokens_.GetAllTokens()){
                 tokens.push_back({tk.first, tk.second});
             }
             oa << tokens;
+            // std::cout << "Start tokens serializing...\n";
             out.close();
             std::filesystem::rename(tmp_file_name,save_file_);
+            // std::cout << "Saved!\n";
         }catch(std::exception& ex){
             err_msg = ex.what();
             return false;
         }
-        time_from_save_ = 0ms;
         return true;
-        
     }
 
     bool GameApp::Restore(std::string& err_msg){
@@ -107,17 +111,11 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
             
             std::ifstream in(save_file_);
             boost::archive::text_iarchive ia{in};
-            size_t num;
-            ia  >> num;
-            std::vector<serialization::SessionRepr>sessions_repr;
-            for(size_t i = 0; i < num; ++i){
-                serialization::SessionRepr sr;
-                ia >> sr;
-                sessions_repr.push_back(sr);
-            }
+            std::vector<serialization::SessionRepr>srs;
+            ia >> srs;
             std::vector<serialization::TokenRepr> tokens;
             ia >> tokens;
-            for(auto& sr : sessions_repr){
+            for(auto& sr : srs){
                 RestoreSession(sr, tokens);
             }
         }catch(std::exception& ex){
@@ -144,7 +142,11 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
             Token token{it->GetToken()};
             player_tokens_.Add(new_player, token);
             player_session_[new_player] = session;
+            if(model::Dog::next_id_ <= dog.GetId()){
+                model::Dog::next_id_ = dog.GetId() + 1;
+            }
         }
+        sessions_.insert(session);
     }
 
 
