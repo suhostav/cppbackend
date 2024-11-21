@@ -29,7 +29,7 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
     if(data_object.contains("defaultDogSpeed"s)){
         default_speed = data_object.at("defaultDogSpeed"s).as_double();
     }
-    int default_bag_capacity = 0;
+    int default_bag_capacity = 3;
     if(data_object.contains("defaultBagCapacity"s)){
         default_bag_capacity = data_object.at("defaultBagCapacity"s).as_int64();
     }
