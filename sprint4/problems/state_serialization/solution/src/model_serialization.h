@@ -63,7 +63,7 @@ public:
         ar& pos_;
     }
 
-private:
+
     size_t id_;
     int type_;
     geom::Point2D pos_;
@@ -90,7 +90,7 @@ public:
         model::Dog dog{id_, name_, pos_, speed_, bag_capacity_};
         dog.SetSpeed(speed_);
         dog.SetDir(direction_, limit_);
-        dog.AddScore(score_);
+        dog.SetScore(score_);
         for (const auto& item : bag_content_) {
             if (!dog.AddLoot(item.Restore())) {
                 throw std::runtime_error("Failed to put bag content");
@@ -162,34 +162,17 @@ public:
 
     template <typename Archive>
     void serialize(Archive& ar, [[maybe_unused]] const unsigned version) {
-        // std::cout << "\tStart sessions serializing...\n";
-        // std::cout << "\t\trandon_point = " << (random_point_ == true?"true":"false");
-        // ar& random_point_;
-        // std::cout << "\t\t, dog_width_ = " << dog_width_;
         ar& dog_width_;
-        // std::cout << "\t\t, loot_width_ = " << loot_width_;
         ar& loot_width_;
-        // std::cout << "\t\t, office_width_ = " << office_width_;
         ar& office_width_;
-        // std::cout << "\t\t, map_id_ = " << map_id_;
         ar& map_id_;
-        // std::cout << "\tStart dogs serializing...\n";
         ar& dogs_;
-        // std::cout << "\tStart loots serializing...\n";
         ar& loots_;
     }
 
     const std::string GetMapId() const {
         return map_id_;
     }
-
-//     model::GameSession Restore (model::Map* map, loot_gen::LootGenerator::TimeInterval loot_period, double loot_probability){
-//         model::GameSession session{map, random_point_, loot_period, loot_probability};
-//         for(DogRepr dr : dogs_){
-//             session.AddDog(dr.Restore());
-//         }
-//         return session;
-//     }   
 
 // private:
     bool random_point_;

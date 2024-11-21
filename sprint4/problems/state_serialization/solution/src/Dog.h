@@ -84,6 +84,10 @@ public:
         score_ += value;
     }
 
+    void SetScore(int value){
+        score_ = value;
+    }
+
     int GetScore() const {
         return score_;
     }

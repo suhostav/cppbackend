@@ -146,6 +146,12 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
                 model::Dog::next_id_ = dog.GetId() + 1;
             }
         }
+        for(serialization::LootRepr& lr : session_repr.loots_){
+            session->RestoreLoot(lr.id_, lr.type_, lr.pos_);
+            if(model::Loot::next_id_ <= lr.id_){
+                model::Loot::next_id_ = lr.id_ + 1;
+            }
+        }
         sessions_.insert(session);
     }
 

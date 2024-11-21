@@ -264,6 +264,10 @@ void GameSession::GenerateLoots(std::chrono::milliseconds period){
     }
 }
 
+void GameSession::RestoreLoot(size_t id, int type, geom::Point2D pos){
+    loots_.emplace_back(id, type, pos);
+}
+
 void GameSession::SetWidth(double dog_width, double loot_width, double office_width){
     dog_width_ = dog_width;
     loot_width_ = loot_width;

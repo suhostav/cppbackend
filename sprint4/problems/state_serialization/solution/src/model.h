@@ -285,6 +285,7 @@ public:
         return dogs_by_Ids_;
     }
     void GenerateLoots(std::chrono::milliseconds period);
+    void RestoreLoot(size_t id, int type, geom::Point2D pos);
     const Loots GetLoots() const {
         return loots_;
     }
