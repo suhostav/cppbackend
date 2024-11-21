@@ -322,8 +322,7 @@ bool GameSession::TakeLoot(const GatheringEvent& take_event){
 
 void GameSession::DropLoots(const GatheringEvent& drop_event){
     Loot& loot = loots_[drop_event.item_id];
-    const LootType& loot_type = map_->GetLootTypesObjs()[loot.type_];
-    int value = loot_type.value;
+    int value = map_->GetLootTypeValue(loot.type_);
     Dog& dog = dogs_[drop_event.gatherer_id];
     dog.AddScore(value);
     dog.DropLoots();

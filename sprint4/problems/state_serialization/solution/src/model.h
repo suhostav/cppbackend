@@ -181,8 +181,8 @@ public:
         return bag_capacity_;
     }
     
-    const std::vector<LootType> GetLootTypesObjs() const {
-        return loot_types_objs_;
+    int GetLootTypeValue(size_t ind) const {
+        return loot_types_objs_[ind].value;
     }
 
 private:
