@@ -114,11 +114,13 @@ public:
 
 private:
     std::vector<LootRepr> CreateBagRepr(const model::Dog::BagContent& bag_content){
-        bag_content_.clear();
+        std::vector<LootRepr>bag_loots;
         for(const model::Loot& loot : bag_content){
-            bag_content_.emplace_back(loot);
+            LootRepr lr{loot};
+            bag_loots.push_back(lr);
+            // bag_loots.emplace_back(loot);
         }
-        return bag_content_;
+        return bag_loots;
     }
     uint64_t id_{0u};
     std::string name_;

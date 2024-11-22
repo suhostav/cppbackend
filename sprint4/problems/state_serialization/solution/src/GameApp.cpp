@@ -80,7 +80,7 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
             std::ofstream out(tmp_file_name, std::ios_base::trunc);
             boost::archive::text_oarchive oa{out};
             std::vector<serialization::SessionRepr> srs;
-            for(const auto& session : sessions_){
+            for(auto session : sessions_){
                 // std::cout << "Saving session: " << session << std::endl;
                 srs.emplace_back(*session);
             }

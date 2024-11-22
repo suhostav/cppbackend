@@ -310,7 +310,6 @@ void GameSession::CheckCollisions(){
 }
 
 bool GameSession::TakeLoot(const GatheringEvent& take_event){
-
     auto& dog = dogs_[take_event.gatherer_id];
     bool result = dog.AddLoot(loots_[take_event.item_id]);
     if(result){
@@ -321,10 +320,14 @@ bool GameSession::TakeLoot(const GatheringEvent& take_event){
 }
 
 void GameSession::DropLoots(const GatheringEvent& drop_event){
-    Loot& loot = loots_[drop_event.item_id];
-    int value = map_->GetLootTypeValue(loot.type_);
     Dog& dog = dogs_[drop_event.gatherer_id];
-    dog.AddScore(value);
+    if(dog.GetLoots().size() == 0){
+        return;
+    }
+    for(auto& loot : dog.GetLoots()){
+        int value = map_->GetLootTypeValue(loot.type_);
+        dog.AddScore(value);
+    }
     dog.DropLoots();
 }
 
