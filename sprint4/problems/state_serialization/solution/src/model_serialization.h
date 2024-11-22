@@ -116,9 +116,9 @@ private:
     std::vector<LootRepr> CreateBagRepr(const model::Dog::BagContent& bag_content){
         std::vector<LootRepr>bag_loots;
         for(const model::Loot& loot : bag_content){
-            LootRepr lr{loot};
-            bag_loots.push_back(lr);
-            // bag_loots.emplace_back(loot);
+            // LootRepr lr{loot};
+            // bag_loots.push_back(lr);
+            bag_loots.emplace_back(loot);
         }
         return bag_loots;
     }
