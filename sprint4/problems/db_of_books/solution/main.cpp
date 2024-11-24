@@ -36,7 +36,7 @@ public:
     public:
         inline static auto tag_add_book{"tag_add_book"_zv};
         inline static auto add_book{"INSERT INTO books (title, author, year, ISBN) VALUES ($1, $2, $3, $4);"_zv};
-        inline static auto tag_add_book_on_isbn{"tag_add_book_on_isbn"_zv};
+        inline static auto tag_add_book_no_isbn{"tag_add_book_no_isbn"_zv};
         inline static auto add_book_no_isbn{"INSERT INTO books (title, author, year) VALUES ($1, $2, $3);"_zv};
         inline static auto tag_all_books{"tag_all_books"_zv};
         inline static auto all_books{"SELECT * FROM books;"_zv};
@@ -67,7 +67,7 @@ void add_book(const boost::json::value& jline, pqxx::connection&conn){
     if(isbn.size() > 0) {
         w.exec_prepared(statics::queries::tag_add_book, title, author, year, isbn);
     } else {
-        w.exec_prepared(statics::queries::tag_add_book_on_isbn, title, author, year);
+        w.exec_prepared(statics::queries::tag_add_book_no_isbn, title, author, year);
     }
     w.commit();
 }
@@ -108,7 +108,7 @@ int main(int argc, const char* argv[]){
         pqxx::connection conn{argv[1]};
         prepare_table(conn);
         conn.prepare(statics::queries::tag_add_book, statics::queries::add_book); 
-        conn.prepare(statics::queries::tag_add_book_on_isbn, statics::queries::add_book_no_isbn); 
+        conn.prepare(statics::queries::tag_add_book_no_isbn, statics::queries::add_book_no_isbn); 
 
         std::string line;
 #ifdef DATA_FROM_FILE
