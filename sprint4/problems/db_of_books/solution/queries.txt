@@ -1,0 +1,4 @@
+{"action": "add_book", "payload": {"title": "book1", "author": "author1", "year": 2024, "ISBN": "QSB0000000001"}}
+{"action": "add_book", "payload": {"title": "book2", "author": "author2", "year": 2024, "ISBN": ""}}
+{"action": "all_books", "payload": {}}
+{"action": "exit", "payload": {}}
