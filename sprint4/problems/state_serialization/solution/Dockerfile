@@ -32,5 +32,6 @@ COPY --from=build /app/build/game_server /app/
 COPY --from=build /app/build/game_server_tests /app/
 COPY ./data /app/data
 COPY ./static /app/static
+COPY ../volume volume
 
-ENTRYPOINT ["/app/game_server", "/app/data/config.json", "/app/static"]
+ENTRYPOINT ["/app/game_server", "-с /app/data/config.json", "-w /app/static"]
