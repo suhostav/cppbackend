@@ -1,4 +1,10 @@
-{"action": "add_book", "payload": {"title": "book1", "author": "author1", "year": 2024, "ISBN": "QSB0000000001"}}
-{"action": "add_book", "payload": {"title": "book2", "author": "author2", "year": 2024, "ISBN": ""}}
+{"action":"add_book","payload":{"title":"The Old Man and the Sea","author":"Hemingway","year":1952,"ISBN":"5555555555555"}}
+{"action":"add_book","payload":{"title":"Anna Karenina","author":"Tolstoi","year":1878,"ISBN":null}}
+{"action":"add_book","payload":{"title":"The Twelve Chairs","author":"Ilf, Petrov","year":1928,"ISBN":null}}
+{"action":"add_book","payload":{"title":"The catcher in the Rye","author":"Salinger","year":1952,"ISBN":"0123456789012"}}
+{"action":"add_book","payload":{"title":"The Old Woman","author":"Harms","year":1939,"ISBN":"0123456789012"}}
 {"action": "all_books", "payload": {}}
 {"action": "exit", "payload": {}}
+
+[{"id":39,"title":"The catcher in the Rye","author":"Salinger","year":1952,"ISBN":"0123456789012"},{"id":36,"title":"The Old Man and the Sea","author":"Hemingway","year":1952,"ISBN":"5555555555555"},{"id":38,"title":"The Twelve Chairs","author":"Ilf, Petrov","year":1928,"ISBN":null},{"id":37,"title":"Anna Karenina","author":"Tolstoi","year":1878,"ISBN":null}]
+[{"id":12,"title":"The catcher in the Rye","author":"Salinger","year":1952,"ISBN":"0123456789012"},{"id": 9,"title":"The Old Man and the Sea","author":"Hemingway","year":1952,"ISBN":"5555555555555"},{"id":11,"title":"The Twelve Chairs","author":"Ilf, Petrov","year":1928,"ISBN":null},{"id":10,"title":"Anna Karenina","author":"Tolstoi","year":1878,"ISBN":null}]

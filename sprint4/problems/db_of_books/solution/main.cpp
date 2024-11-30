@@ -39,7 +39,7 @@ public:
         inline static auto tag_add_book_no_isbn{"tag_add_book_no_isbn"_zv};
         inline static auto add_book_no_isbn{"INSERT INTO books (title, author, year) VALUES ($1, $2, $3);"_zv};
         inline static auto tag_all_books{"tag_all_books"_zv};
-        inline static auto all_books{"SELECT * FROM books;"_zv};
+        inline static auto all_books{"SELECT * FROM books ORDER BY year DESC , title, author, isbn;"_zv};
     };
 };
 
@@ -58,18 +58,23 @@ void prepare_table(pqxx::connection& conn){
 }
 
 void add_book(const boost::json::value& jline, pqxx::connection&conn){
+    try{
     pqxx::work w(conn);
     boost::json::object payload{jline.as_object().at(statics::keys::payload).as_object()};
     string title{payload.at(statics::fields::title).as_string()};
     string author{payload.at(statics::fields::author).as_string()};
     int year{static_cast<int>(payload.at(statics::fields::year).as_int64())};
-    string isbn{payload.at(statics::fields::ISBN).as_string()};
-    if(isbn.size() > 0) {
+    if(!payload.at(statics::fields::ISBN).is_null()) {
+        string isbn{payload.at(statics::fields::ISBN).as_string()};
         w.exec_prepared(statics::queries::tag_add_book, title, author, year, isbn);
     } else {
         w.exec_prepared(statics::queries::tag_add_book_no_isbn, title, author, year);
     }
     w.commit();
+        cout << "{\"result\":true}" << endl;
+    } catch(std::exception& e){
+        cout << "{\"result\":false}" << endl;
+    }
 }
 
 void get_books(pqxx::connection& conn){
@@ -84,7 +89,7 @@ void get_books(pqxx::connection& conn){
             if(isbn_opt.has_value()) {
                 jbook[statics::fields::ISBN] = *isbn_opt;
             } else {
-                jbook[statics::fields::ISBN] = "";
+                jbook[statics::fields::ISBN].emplace_null();
             }
             jbooks.push_back(jbook);
         }
