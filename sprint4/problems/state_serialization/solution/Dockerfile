@@ -26,7 +26,6 @@ RUN cd /app/build && \
 FROM ubuntu:22.04 as run
 
 RUN groupadd -r www && useradd -r -g www www
-RUN ["mkdir", "/volume"]
 USER www
 
 COPY --from=build /app/build/game_server /app/
@@ -34,4 +33,4 @@ COPY --from=build /app/build/game_server_tests /app/
 COPY ./data /app/data
 COPY ./static /app/static
 
-ENTRYPOINT ["/app/game_server", "-с /app/data/config.json", "-w /app/static"]
+ENTRYPOINT ["/app/game_server", "-с", "/app/data/config.json", "-w", "/app/static"]

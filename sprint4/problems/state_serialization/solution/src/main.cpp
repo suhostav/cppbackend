@@ -3,6 +3,7 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/program_options.hpp>
+#include <filesystem>
 #include <iostream>
 #include <thread>
 
@@ -90,14 +91,35 @@ struct Args {
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(additional_data, "AdditionalData", boost::json::value)
 
+bool CreateSavePath(const std::string& save_path){
+    namespace fs = std::filesystem;
+    fs::path path{save_path};
+    path = path.lexically_normal();
+    path = path.remove_filename();
+    path = fs::absolute(path);
+    fs::path new_path;
+    for(auto& dir : path){
+        if(dir == ".."){
+            new_path = new_path.parent_path();
+        } else {
+            new_path/= dir;
+        }
+    }
+    if(fs::exists(new_path)){
+        return true;
+    }
+    bool res = fs::create_directories(new_path);
+    return res;
+}
+
 int main(int argc, const char* argv[]) {
     InitLog();
     Args args{.tick_period = 0, .random_pos = false, .save_file = "", .save_period = 0};
     if(argc == 1){
-        args.config = "../../data/config.json";
+        args.config = "../data/config.json";
         args.root_dir = "../../static";
         args.tick_period = 50;
-        args.save_file = "../../data/saved_data.txt";
+        args.save_file = "../../volume/saved_data.txt";
         args.save_period = 3000;
     } else if(argc == 3){
         args.config = "data/config.json";
@@ -117,7 +139,13 @@ int main(int argc, const char* argv[]) {
         }
     }
 
+
     try {
+        //проверяем есть ли каталог
+        if(!CreateSavePath(args.save_file)){
+            std::cout << "Cannot create save pass: " << args.save_file << std::endl;;
+            return EXIT_FAILURE;
+        }
         // 1. Загружаем карту из файла и построить модель игры
         model::Game game = json_loader::LoadGame(args.config);
         std::cout << "Random point: " <<(args.random_pos?"true":"false") << std::endl;
