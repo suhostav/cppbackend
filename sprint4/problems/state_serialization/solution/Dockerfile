@@ -17,13 +17,17 @@ RUN mkdir /app/build && cd /app/build && \
 COPY ./src /app/src
 COPY ./tests /app/tests
 COPY CMakeLists.txt /app/ 
-
+USER root
 RUN cd /app/build && \
     cmake -DCMAKE_BUILD_TYPE=Release .. && \
     cmake --build . 
 
 #-------- run container ---------------------
 FROM ubuntu:22.04 as run
+
+RUN echo "creating volume folder..."
+RUN mkdir /volume/
+RUN chmod 777 /volume/
 
 RUN groupadd -r www && useradd -r -g www www
 USER www

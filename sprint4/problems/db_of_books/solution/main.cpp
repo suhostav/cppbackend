@@ -6,7 +6,7 @@
 
 using namespace std::literals;
 
-// #define DATA_FROM_FILE
+#define DATA_FROM_FILE
 
 using pqxx::operator"" _zv;
 using std::string, std::cin, std::cout, std::endl;
