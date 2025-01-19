@@ -3,6 +3,8 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include "../domain/author.h"
+#include "../domain/book.h"
 
 namespace menu {
 class Menu;
@@ -26,10 +28,12 @@ struct AuthorInfo {
     std::string name;
 };
 
-struct BookInfo {
-    std::string title;
-    int publication_year;
-};
+// struct BookInfo {
+//     std::string id;
+//     std::string title;
+//     int publication_year;
+//     std::string author;
+// };
 
 }  // namespace detail
 
@@ -41,14 +45,21 @@ private:
     bool AddAuthor(std::istream& cmd_input) const;
     bool AddBook(std::istream& cmd_input) const;
     bool ShowAuthors() const;
+    bool ShowBook(std::istream& cmd_input) const;
     bool ShowBooks() const;
     bool ShowAuthorBooks() const;
+    bool DeleteAuthor(std::istream& cmd_input) const;
+    bool EditAuthor(std::istream& cmd_input) const;
+    bool DeleteBook(std::istream& cmd_input) const;
+    bool EditBook(std::istream& cmd_input) const;
 
     std::optional<detail::AddBookParams> GetBookParams(std::istream& cmd_input) const;
     std::optional<std::string> SelectAuthor() const;
+    // std::optional<domain::BookRepr> SelectBook(std::string_view param) const:
+    std::string SelectAuthorFromList() const;
     std::vector<detail::AuthorInfo> GetAuthors() const;
-    std::vector<detail::BookInfo> GetBooks() const;
-    std::vector<detail::BookInfo> GetAuthorBooks(const std::string& author_id) const;
+    std::vector<domain::BookRepr> GetBooks(std::string_view param = "") const;
+    std::vector<domain::BookRepr> GetAuthorBooks(const std::string& author_id) const;
 
     menu::Menu& menu_;
     app::UseCases& use_cases_;

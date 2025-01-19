@@ -5,13 +5,21 @@
 #include "menu/menu.h"
 #include "postgres/postgres.h"
 #include "ui/view.h"
+#include "app/UntiOfWork.h"
+#include "postgres/UnitOfWorkImpl.h"
+
 
 namespace bookypedia {
 
 using namespace std::literals;
 
-Application::Application(const AppConfig& config)
-    : db_{pqxx::connection{config.db_url}} {
+app::UnitOfWorkFactory CreateUnitOfWork(const AppConfig& config){
+    postgres::UnitOfWorkImpl uwork(config.db_url);
+    return app::UnitOfWorkFactory(uwork);
+}
+
+Application::Application(app::UnitOfWorkFactory& factory)
+    : use_cases_{factory} {
 }
 
 void Application::Run() {

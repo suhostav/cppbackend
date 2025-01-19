@@ -24,7 +24,9 @@ bookypedia::AppConfig GetConfigFromEnv() {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[]) {
     try {
-        bookypedia::Application app{GetConfigFromEnv()};
+        postgres::UnitOfWorkImpl uwork(GetConfigFromEnv().db_url);
+        app::UnitOfWorkFactory factory(uwork);
+        bookypedia::Application app{factory};
         app.Run();
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

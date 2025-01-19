@@ -2,7 +2,9 @@
 #include <pqxx/pqxx>
 
 #include "app/use_cases_impl.h"
+#include "app/UntiOfWork.h"
 #include "postgres/postgres.h"
+#include "postgres/UnitOfWorkImpl.h"
 
 namespace bookypedia {
 
@@ -12,13 +14,13 @@ struct AppConfig {
 
 class Application {
 public:
-    explicit Application(const AppConfig& config);
+    explicit Application(app::UnitOfWorkFactory& factory);
 
     void Run();
 
 private:
-    postgres::Database db_;
-    app::UseCasesImpl use_cases_{db_.GetAuthors(), db_.GetBooks()};
+    // postgres::Database db_;
+    app::UseCasesImpl use_cases_;
 
 };
 
