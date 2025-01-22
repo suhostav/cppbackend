@@ -150,12 +150,16 @@ std::vector<domain::BookRepr> BookRepositoryImpl::GetBooks(std::string_view para
         result = r.exec("SELECT books.id, books.title, books.publication_year, books.author_id, authors.name  FROM books "
             "JOIN authors ON books.author_id=authors.id ORDER BY books.title, authors.name, books.publication_year;");
     } else {
+        // std::string q{"SELECT books.id, books.title, books.publication_year, books.author_id, authors.name  FROM books "
+        //     "JOIN authors ON books.author_id=authors.id  WHERE (title LIKE '"};
+        // q += param;
+        // q += "%') ORDER BY books.title, authors.name, books.publication_year;";
+        // // result = r.exec_params("SELECT id, title, publication_year, author_id  FROM books WHERE (title LIKE '$1%') ORDER BY title;"_zv, param);
+        // result = r.exec(q);
         std::string q{"SELECT books.id, books.title, books.publication_year, books.author_id, authors.name  FROM books "
-            "JOIN authors ON books.author_id=authors.id  WHERE (title LIKE '"};
-        q += param;
-        q += "%') ORDER BY books.title, authors.name, books.publication_year;";
-        // result = r.exec_params("SELECT id, title, publication_year, author_id  FROM books WHERE (title LIKE '$1%') ORDER BY title;"_zv, param);
-        result = r.exec(q);
+            "JOIN authors ON books.author_id=authors.id  WHERE title=$1 "
+            "ORDER BY books.title, authors.name, books.publication_year;"};
+        result = r.exec_params(q, param);
     }
     for (auto const &row: result){
         std::string fields[5];

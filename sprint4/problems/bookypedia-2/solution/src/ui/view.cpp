@@ -74,13 +74,26 @@ bool View::AddAuthor(std::istream& cmd_input) const {
 
 bool View::DeleteAuthor(std::istream& cmd_input) const {
     try {
-        std::string aid_str = SelectAuthorFromList();
+        std::string name;
+        std::getline(cmd_input, name);
+        boost::algorithm::trim(name);
+        std::string aid_str;
+        if(!name.empty()){
+            auto autor_opt = use_cases_.GetAuthorByName(name);
+            if(!autor_opt){
+                output_ << "Failed to delete author\n";
+                return true;
+            }
+            aid_str = autor_opt->GetId().ToString();
+        } else {
+            aid_str = SelectAuthorFromList();
+        }
         if(aid_str.empty()){
-            return false;
+            return true;
         }
         use_cases_.DeleteAuthor(std::move(aid_str));
     } catch (const std::exception&) {
-        output_ << "Failed to add author"sv << std::endl;
+        output_ << "Failed to delete author\n"sv << std::endl;
     }
     return true;
 }
@@ -99,7 +112,7 @@ bool View::EditAuthor(std::istream& cmd_input) const {
         auto author_opt = use_cases_.GetAuthorByName(name);
         if(!author_opt){
             output_ << "Failed to edit author\n"s;
-            return false;
+            return true;
         }
         auto aid = (*author_opt).GetId();
         aid_str = aid.ToString();
@@ -107,7 +120,11 @@ bool View::EditAuthor(std::istream& cmd_input) const {
     output_ << "Enter new name:"s << std::endl;
     std::string new_name;
     std::getline(input_, new_name);
+    try{
     use_cases_.RenameAuthor(aid_str, new_name);
+    } catch(...){
+        output_ << "Failed to edit author\n"s;
+    }
     return true;
 }
 
@@ -340,12 +357,12 @@ std::string View::SelectAuthorFromList() const{
         try {
             author_idx = std::stoi(str);
         } catch (std::exception const&) {
-            throw std::runtime_error("Invalid author num");
+            throw std::runtime_error("Failed to edit author");
         }
 
         --author_idx;
         if (author_idx < 0 or author_idx >= authors.size()) {
-            throw std::runtime_error("Invalid author num");
+            throw std::runtime_error("Failed to edit author");
         }
         return authors[author_idx].id;
 }

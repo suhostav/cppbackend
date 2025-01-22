@@ -32,9 +32,12 @@ RUN chmod 777 /volume/
 RUN groupadd -r www && useradd -r -g www www
 USER www
 
+RUN mkdir /app/tmp/
+RUN mkdir app/tmp/volume
+
 COPY --from=build /app/build/game_server /app/
 COPY --from=build /app/build/game_server_tests /app/
 COPY ./data /app/data
 COPY ./static /app/static
 
-ENTRYPOINT ["/app/game_server", "-с", "/app/data/config.json", "-w", "/app/static"]
+ENTRYPOINT ["/app/game_server", "-с", "/app/data/config.json", "-w", "/app/static", "-s", f"/tmp/volume/{state}", "-p", "1000"]
