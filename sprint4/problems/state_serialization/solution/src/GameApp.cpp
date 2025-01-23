@@ -76,8 +76,7 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
 
     bool GameApp::Save(std::string& err_msg){
         try{
-            std::string tmp_file_name{"game_server.tmp"};
-            std::ofstream out(tmp_file_name, std::ios_base::trunc);
+            std::ofstream out(tmp_save_file_, std::ios_base::trunc);
             boost::archive::text_oarchive oa{out};
             std::vector<serialization::SessionRepr> srs;
             for(auto session : sessions_){
@@ -94,7 +93,7 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
             oa << tokens;
             // std::cout << "Start tokens serializing...\n";
             out.close();
-            std::filesystem::rename(tmp_file_name,save_file_);
+            std::filesystem::rename(tmp_save_file_,save_file_);
             // std::cout << "Saved!\n";
         }catch(std::exception& ex){
             err_msg = ex.what();
@@ -153,6 +152,12 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
             }
         }
         sessions_.insert(session);
+    }
+
+    std::string GameApp::CreareTmpFileName(const std::string& save_file){
+        std::string name;
+
+        return save_file + ".tmp"s;
     }
 
 

@@ -32,9 +32,6 @@ RUN chmod 777 /volume/
 RUN groupadd -r www && useradd -r -g www www
 USER www
 
-RUN mkdir /app/tmp/
-RUN mkdir app/tmp/volume
-
 COPY --from=build /app/build/game_server /app/
 COPY --from=build /app/build/game_server_tests /app/
 COPY ./data /app/data

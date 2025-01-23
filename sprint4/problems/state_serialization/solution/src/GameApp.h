@@ -24,6 +24,7 @@ public:
     explicit GameApp(model::Game& game, std::string save_file, Milliseconds save_period)
         : game_(game)
         , save_file_(save_file)
+        , tmp_save_file_(CreareTmpFileName(save_file))
         , time_from_save_(0)
         , save_period_(save_period){
     }
@@ -51,12 +52,14 @@ public:
 
 private:
     void RestoreSession(serialization::SessionRepr& session_repr, std::vector<serialization::TokenRepr>& tokens);
+    std::string CreareTmpFileName(const std::string& save_file);
     model::Game& game_;
     Players players_;
     PlayerTokens player_tokens_;
     std::set<model::GameSession*> sessions_;
     std::unordered_map<Player*, model::GameSession*> player_session_;
     std::string save_file_;
+    std::string tmp_save_file_;
     Milliseconds time_from_save_;
     Milliseconds save_period_;
     
