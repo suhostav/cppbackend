@@ -101,6 +101,7 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
         }
         return true;
     }
+    
 
     bool GameApp::Restore(std::string& err_msg){
         try{
