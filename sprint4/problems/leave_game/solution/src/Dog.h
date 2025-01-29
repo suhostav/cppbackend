@@ -10,6 +10,8 @@
 
 namespace model{
 
+using namespace std::chrono;
+
 class Dog {
 public:
     using BagContent = std::vector<Loot>;
@@ -113,6 +115,7 @@ private:
     size_t bag_capacity_;
     BagContent loots_;
     int score_ = 0;
-
+    bool is_active = false;
+    steady_clock::time_point stop_begin_ = steady_clock::now();
 };
 }   //namespace model

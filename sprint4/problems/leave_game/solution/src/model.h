@@ -17,6 +17,7 @@
 
 namespace model {
 using namespace std::literals;
+using namespace std::chrono_literals;
 
 class BadMapIdException : public std::invalid_argument {
 public:
@@ -369,6 +370,9 @@ public:
     double GetLootProbability(){
         return loot_probability_;
     }
+    std::chrono::seconds GetDogRetirementTime() const {
+        return duration_cast<std::chrono::seconds>(1s * dog_retirement_time);
+    }
 private:
     int max_map_dogs_;
     using MapIdHasher = util::TaggedHasher<Map::Id>;
@@ -380,6 +384,7 @@ private:
     bool random_point_ = false;
     loot_gen::LootGenerator::TimeInterval loot_period_ = 1000s;
     double loot_probability_ = 0;
+    uint64_t dog_retirement_time = 10;
 };
 
 }  // namespace model
