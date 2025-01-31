@@ -86,6 +86,7 @@ public:
         , limit_(dog.GetLimit())
         , score_(dog.GetScore())
         , bag_content_(CreateBagRepr(dog.GetBagContent()))
+        , total_time_(&dog.GetTotalTime())
         , stop_period_(&dog.GetStopPeriod())
         , stop_duration_(&dog.GetStopDuration()) {
     }
@@ -118,6 +119,7 @@ public:
         ar& limit_;
         ar& score_;
         ar& bag_content_;
+        ar& boost::serialization::make_binary_object(total_time_, sizeof(std::chrono::milliseconds));
         ar& boost::serialization::make_binary_object(stop_period_, sizeof(std::chrono::milliseconds));
         ar& boost::serialization::make_binary_object(stop_duration_, sizeof(std::chrono::system_clock::duration));
     }
@@ -141,6 +143,7 @@ private:
     model::DCoord limit_;
     int score_ = 0;
     std::vector<LootRepr> bag_content_;
+    const void* total_time_;
     const void* stop_period_;
     const void* stop_duration_;
 };

@@ -12,6 +12,7 @@
 #include "GameApp.h"
 #include "request_handler.h"
 #include "Ticker.h"
+#include "game_repository.h"
 
 using namespace std::literals;
 namespace net = boost::asio;
@@ -112,6 +113,19 @@ bool CreateSavePath(const std::string& save_path){
     return res;
 }
 
+constexpr const char DB_URL_ENV_NAME[]{"GAME_DB_URL"};
+
+
+std::string GetConnectionString(){
+    std::string config;
+    if (const auto* url = std::getenv(DB_URL_ENV_NAME)) {
+        config = url;
+    } else {
+        throw std::runtime_error(DB_URL_ENV_NAME + " environment variable not found"s);
+    }
+    return config;
+}
+
 int main(int argc, const char* argv[]) {
     InitLog();
     Args args{.tick_period = 0, .random_pos = false, .save_file = "", .save_period = 0};
@@ -154,7 +168,8 @@ int main(int argc, const char* argv[]) {
         const unsigned num_threads = std::thread::hardware_concurrency();
         net::io_context ioc(num_threads);
         auto api_strand = net::make_strand(ioc);
-        app::GameApp game_app(game, args.save_file, args.save_period * 1ms);
+        GameRepository repo(std::max(1u, num_threads),GetConnectionString());
+        app::GameApp game_app(game, args.save_file, args.save_period * 1ms, repo);
         if(std::filesystem::exists(args.save_file)){
             std::string msg;
             game_app.Restore(msg);

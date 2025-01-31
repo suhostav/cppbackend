@@ -108,6 +108,12 @@ public:
     bool IsActive() const {
         return (speed_.hs != 0.0) || (speed_.vs != 0);
     }
+    const std::chrono::milliseconds& GetTotalTime() const {
+        return total_time_;
+    }
+    int GetTotalSeconds() const {
+        return duration_cast<std::chrono::seconds>(total_time_).count();
+    }
     void SetStopPeriod(std::chrono::milliseconds stop_period){
         stop_period_ = stop_period;
     }
@@ -141,6 +147,7 @@ private:
     size_t bag_capacity_;
     BagContent loots_;
     int score_ = 0;
+    std::chrono::milliseconds total_time_ = 0s;
     std::chrono::milliseconds stop_period_ = 0s;
     std::chrono::seconds stop_duration_ = 10s;
 };

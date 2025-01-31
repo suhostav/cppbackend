@@ -5,6 +5,8 @@ std::uint64_t Dog::next_id_ = 0;
 
 void Dog::Move(std::chrono::milliseconds period){
 
+    total_time_ += period;
+
     if(speed_.hs == 0.0 && speed_.vs == 0.0){
         stop_period_ += period;
         if(IsRetire()) {

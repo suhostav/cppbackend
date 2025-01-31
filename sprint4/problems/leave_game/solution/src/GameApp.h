@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "PlayerTokens.h"
 #include "model_serialization.h"
+#include "game_repository.h"
 
 
 namespace app{
@@ -21,12 +22,13 @@ struct JoinInfo{
 class GameApp {
 public:
     using Milliseconds = std::chrono::milliseconds;
-    explicit GameApp(model::Game& game, std::string save_file, Milliseconds save_period)
+    explicit GameApp(model::Game& game, std::string save_file, Milliseconds save_period, GameRepository& repo)
         : game_(game)
         , save_file_(save_file)
         , tmp_save_file_(CreareTmpFileName(save_file))
         , time_from_save_(0)
-        , save_period_(save_period){
+        , save_period_(save_period)
+        , repo_(repo){
     }
 
     const Map* FindMap(const Map::Id& id) const noexcept {
@@ -63,6 +65,6 @@ private:
     std::string tmp_save_file_;
     Milliseconds time_from_save_;
     Milliseconds save_period_;
-    
+    GameRepository& repo_;
 };
 }
