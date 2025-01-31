@@ -29,6 +29,15 @@ Player* PlayerTokens::FindPlayerByToken(Token token) const{
     return token_to_player_.at(token);
 }
 
+void PlayerTokens::RemovePlayerToken(Player* player) {
+    for( auto [next_token, next_player] : token_to_player_){
+        if( next_player == player){
+            token_to_player_.erase(next_token);
+            return;
+        }
+    }
+}
+
 std::vector<std::pair<std::uint64_t, std::string>> PlayerTokens::GetAllTokens() const{
     std::vector<std::pair<std::uint64_t, std::string>> tokens_players;
     for(const auto [token,player] : token_to_player_){

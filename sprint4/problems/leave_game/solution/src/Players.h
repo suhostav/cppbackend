@@ -16,6 +16,9 @@ public:
 
     Player* Add(Dog* dog_ptr, GameSession* session);
     void Move(std::chrono::milliseconds period);
+    std::deque<Player>& GetPlayers() {
+        return players_;
+    }
 private:
     std::deque<Player> players_;
 };

@@ -1,3 +1,4 @@
+#include <chrono>
 #include <cmath>
 #include <catch2/catch_test_macros.hpp>
 
@@ -5,6 +6,7 @@
 #include "../src/model.h"
 
 using namespace std::literals;
+using namespace std::chrono_literals;
 
 SCENARIO("Genegate loots"){
     using loot_gen::LootGenerator;
@@ -14,7 +16,7 @@ SCENARIO("Genegate loots"){
         model::Map::Id map_id{"map1"s};
         model::Map map(map_id, "Map1", 1, 3);
         map.AddRoad(model::Road(model::Road::HORIZONTAL, {0,0}, 1));
-        model::GameSession session(&map, false, 1s, 1.0);
+        model::GameSession session(&map, false, 1s, 1.0, 15s);
         session.AddDog("Sharik"s);
         session.AddDog("Tusik"s);
         WHEN("time is greater than base interval") {

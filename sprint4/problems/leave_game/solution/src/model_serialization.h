@@ -1,6 +1,8 @@
+#include <chrono>
 #include <iostream>
 #include <vector>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization//binary_object.hpp>
 
 #include "model.h"
 
@@ -83,7 +85,9 @@ public:
         , direction_(dog.GetDir())
         , limit_(dog.GetLimit())
         , score_(dog.GetScore())
-        , bag_content_(CreateBagRepr(dog.GetBagContent())) {
+        , bag_content_(CreateBagRepr(dog.GetBagContent()))
+        , stop_period_(&dog.GetStopPeriod())
+        , stop_duration_(&dog.GetStopDuration()) {
     }
 
     [[nodiscard]] model::Dog Restore() const {
@@ -91,6 +95,10 @@ public:
         dog.SetSpeed(speed_);
         dog.SetDir(direction_, limit_);
         dog.SetScore(score_);
+        void* p1 = const_cast<void*>(stop_period_);
+        dog.SetStopPeriod(*static_cast<std::chrono::milliseconds*>(p1));
+        void* p2 = const_cast<void*>(stop_duration_);
+        dog.SetStopDuration(*static_cast<std::chrono::seconds*>(p2));
         for (const auto& item : bag_content_) {
             if (!dog.AddLoot(item.Restore())) {
                 throw std::runtime_error("Failed to put bag content");
@@ -110,6 +118,8 @@ public:
         ar& limit_;
         ar& score_;
         ar& bag_content_;
+        ar& boost::serialization::make_binary_object(stop_period_, sizeof(std::chrono::milliseconds));
+        ar& boost::serialization::make_binary_object(stop_duration_, sizeof(std::chrono::system_clock::duration));
     }
 
 private:
@@ -131,6 +141,8 @@ private:
     model::DCoord limit_;
     int score_ = 0;
     std::vector<LootRepr> bag_content_;
+    const void* stop_period_;
+    const void* stop_duration_;
 };
 
 class SessionRepr {

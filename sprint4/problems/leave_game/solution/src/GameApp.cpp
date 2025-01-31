@@ -52,6 +52,11 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
     void GameApp::Move(Milliseconds period){
 
         players_.Move(period);
+        for(auto& player : players_.GetPlayers()){
+            if(player.IsRetire()){
+                RemovePlayer(player);
+            }
+        }
         for(auto* session : sessions_){
             session->CheckCollisions();
             session->ClearLoots();
@@ -158,6 +163,16 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
         std::string name;
 
         return save_file + ".tmp"s;
+    }
+
+    void GameApp::RemovePlayer(Player& player) {
+        model::GameSession* session = player.GetSession();
+        player_tokens_.RemovePlayerToken(&player);
+        auto& players = players_.GetPlayers();
+
+        Dog& dog{*player.GetDog()};
+        players.erase(std::find(players.begin(), players.end(), player));
+        session->RemoveDog(dog);
     }
 
 

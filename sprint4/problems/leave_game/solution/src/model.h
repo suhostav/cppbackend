@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -266,7 +267,10 @@ public:
         GameSession& session_;
     };
 
-    GameSession(Map* map, bool random_point, loot_gen::LootGenerator::TimeInterval loot_period, double loot_probability);
+    GameSession(Map* map, bool random_point, 
+        loot_gen::LootGenerator::TimeInterval loot_period, 
+        double loot_probability,
+        std::chrono::seconds dog_retirement_time);
     Dog* AddDog(std::string_view dog_name);
     Dog* AddDog(const Dog& dog);
 
@@ -290,6 +294,7 @@ public:
     const Loots GetLoots() const {
         return loots_;
     }
+    void RemoveDog(Dog& dog);
     //------------обработка коллизий ----------------
     void SetWidth(double dog_width, double loot_width, double office_width); 
     double GetDogWidth() const { return dog_width_; }
@@ -315,6 +320,7 @@ private:
     inline static double default_dog_width = 0.6;
     inline static double default_loot_width = 0.0;
     inline static double default_office_width = 0.5;
+    std::chrono::seconds dog_retirement_time_;
 };
 
 struct JoinResult{
@@ -370,6 +376,9 @@ public:
     double GetLootProbability(){
         return loot_probability_;
     }
+    void SetDogRetirementTime(int64_t period){
+        dog_retirement_time = period;
+    }
     std::chrono::seconds GetDogRetirementTime() const {
         return duration_cast<std::chrono::seconds>(1s * dog_retirement_time);
     }
@@ -384,7 +393,7 @@ private:
     bool random_point_ = false;
     loot_gen::LootGenerator::TimeInterval loot_period_ = 1000s;
     double loot_probability_ = 0;
-    uint64_t dog_retirement_time = 10;
+    int64_t dog_retirement_time = 10;
 };
 
 }  // namespace model

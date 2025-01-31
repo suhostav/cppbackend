@@ -20,6 +20,12 @@ public:
         return session_;
     }
     void Move(std::chrono::milliseconds period);
+    bool IsRetire() const {
+        return dog_->IsRetire();
+    }
+    bool operator==(const Player& other) {
+        return dog_ == other.dog_;
+    }
 private:
     GameSession* session_;
     Dog* dog_;

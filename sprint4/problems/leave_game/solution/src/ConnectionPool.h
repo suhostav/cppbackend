@@ -31,10 +31,10 @@ public:
     };
 
     template <typename ConnectionFactory>
-    ConnectionPool(size_t capacity, ConnectionFactory&& fact){
+    ConnectionPool(size_t capacity, ConnectionFactory&& factory){
         pool_.reserve(capacity);
         for(size_t i = 0; i < capacity; ++i){
-            pool_.emplace_back(fact());
+            pool_.emplace_back(factory());
         }
     }
 

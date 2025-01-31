@@ -53,6 +53,7 @@ public:
 private:
     void RestoreSession(serialization::SessionRepr& session_repr, std::vector<serialization::TokenRepr>& tokens);
     std::string CreareTmpFileName(const std::string& save_file);
+    void RemovePlayer(Player& player);
     model::Game& game_;
     Players players_;
     PlayerTokens player_tokens_;

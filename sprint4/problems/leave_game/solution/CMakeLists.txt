@@ -48,6 +48,7 @@ add_executable(game_server
 	src/collision_detector.h
 	src/collision_detector.cpp
 	src/model_serialization.h
+	src/ConnectionPool.h
 )
 
 target_link_libraries(game_server PRIVATE Threads::Threads CONAN_PKG::boost)

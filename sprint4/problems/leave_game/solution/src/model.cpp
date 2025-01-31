@@ -189,7 +189,7 @@ DCoord Map::GetLimit(Point2D p, DogDir dir) const{
 
 geom::Point2D Map::GetRandomPoint(std::random_device& rd) const{
     geom::Point2D road_point{0.0, 0.0};
-//     // choose road
+     // choose road
     size_t n_roads = GetRoads().size();
     std::uniform_int_distribution<std::mt19937_64::result_type> dist_roads(0, n_roads - 1);
     size_t road_index = dist_roads(rd);
@@ -209,10 +209,13 @@ geom::Point2D Map::GetRandomPoint(std::random_device& rd) const{
 }
 //-------------- GameSession -----------------------------------
 
-GameSession::GameSession(model::Map* map, bool random_point, loot_gen::LootGenerator::TimeInterval loot_period, double loot_probability)
+GameSession::GameSession(model::Map* map, bool random_point, 
+    loot_gen::LootGenerator::TimeInterval loot_period, 
+    double loot_probability, std::chrono::seconds dog_retirement_time)
     : map_(map)
     , random_point_(random_point)
-    , loot_generator_(loot_period, loot_probability, [this](){return this->generator();}) {
+    , loot_generator_(loot_period, loot_probability, [this](){return this->generator();})
+    , dog_retirement_time_(dog_retirement_time) {
 }
 
 Dog* GameSession::AddDog(std::string_view dog_name){
@@ -220,7 +223,7 @@ Dog* GameSession::AddDog(std::string_view dog_name){
     if(random_point_) {
         road_point = map_->GetRandomPoint(random_device_);
     }
-    Dog& new_dog = dogs_.emplace_back(dog_name, road_point, map_->GetBagCapacity());
+    Dog& new_dog = dogs_.emplace_back(dog_name, road_point, map_->GetBagCapacity(), dog_retirement_time_);
     dogs_by_Ids_[new_dog.GetId()] = &new_dog;
     return &new_dog;
 }
@@ -338,6 +341,10 @@ void GameSession::ClearLoots(){
         }), loots_.end());
     }
 }
+
+void GameSession::RemoveDog(Dog& dog) {
+    dogs_.erase(std::find(dogs_.begin(), dogs_.end(), dog));
+}
 //----------------- Game methods ------------------------------------
 
 void Game::AddMap(Map map) {
@@ -373,7 +380,7 @@ JoinResult Game::JoinGame(std::string_view dog_name, std::string_view map_id_str
     }
     if(!join_session){
         join_session = &maps_sessions_[map_index]
-            .emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability());
+            .emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability(), 1s * dog_retirement_time);
         join_session->SetWidth(0.6, 0, 0.5);
     }
     return {join_session->AddDog(std::string(dog_name)), join_session};
@@ -383,7 +390,7 @@ GameSession* Game::CreateSession(std::string map_id_str){
     Map::Id map_id{std::string(map_id_str)};
     size_t map_index = GetMapIndex(map_id);
     std::deque<GameSession>& map_sessions = maps_sessions_[map_index];
-    GameSession* session = &map_sessions.emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability());
+    GameSession* session = &map_sessions.emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability(), 1s * dog_retirement_time);
     return session;
 }
 

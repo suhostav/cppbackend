@@ -25,6 +25,7 @@ public:
     void Add(Player* player, Token& token);
     Player* FindPlayerByToken(Token token) const;
     std::vector<std::pair<std::uint64_t, std::string>> GetAllTokens() const;
+    void RemovePlayerToken(Player* player);
 private:
     std::random_device random_device_;
     std::mt19937_64 generator1_{[this] {
