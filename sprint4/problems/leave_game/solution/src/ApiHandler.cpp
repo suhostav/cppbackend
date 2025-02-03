@@ -163,7 +163,12 @@ namespace http_handler {
             CheckPost(req);
             body = TickResponse(req);
             response = text_response(http::status::ok, body, ContentType::APPLICATION_JSON);
-        } else {
+        } else if(target.starts_with(api_requests::records_request) && target.size() > api_requests::map_request.size()){
+            CheckGetOrHead(req);
+            auto result = RecordsResponse(target.substr(api_requests::records_request.size()));
+            body = IsGetRequest(req) ? result : "";
+            response =  text_response(http::status::ok, body, ContentType::APPLICATION_JSON);
+        }else {
             response = text_response(http::status::bad_request, BadRequest(), ContentType::APPLICATION_JSON);
         }
         return response;
@@ -315,6 +320,35 @@ std::string ApiHandler::TickResponse(const StringRequest& req) const{
     std::cout << "time_delta = " << time_period;
     game_app_.Move(time_period * 1ms);
     return "{}"s;    
+}
+
+std::string ApiHandler::RecordsResponse(const std::string& params) const {
+    int offset = 0;
+    int limit = 100;
+    int ind = 0;
+    if(!params.empty()){
+        if(params[ind] == '/'){
+            ++ind;
+        }
+        if(params[ind] == '?') {
+            std::string values{params.substr(ind+1)};
+            auto items = util::Split(values, '&');
+            for(auto item : items){
+                auto parts = util::Split(item, '=');
+                if(parts.size() == 2){
+                    if(parts[0] == "start"sv && parts[1].size() > 0 && isdigit(parts[1][0])) {
+                        offset = std::atoi(parts[1].data());
+                    } else if(parts[0] == "maxItems"sv && parts[1].size() > 0 && isdigit(parts[1][0])) {
+                        limit = std::atoi(parts[1].data());
+                    }
+                }
+            }
+        }
+    }
+    if(limit > 100){
+        throw BadRequest();
+    }
+    return game_app_.GetRecords(offset, limit);
 }
 
 }

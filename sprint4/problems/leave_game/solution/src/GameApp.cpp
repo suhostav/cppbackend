@@ -171,6 +171,9 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
         auto& players = players_.GetPlayers();
 
         Dog& dog{*player.GetDog()};
+
+        repo_.AddResult(dog);
+
         players.erase(std::find(players.begin(), players.end(), player));
         session->RemoveDog(dog);
     }

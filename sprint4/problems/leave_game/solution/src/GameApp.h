@@ -51,6 +51,9 @@ public:
     bool PeriodicSave(Milliseconds delta, std::string& err_msg);
     bool Save(std::string& err_msg);
     bool Restore(std::string& err_msg);
+    std::string GetRecords(int start, int32_t max_items) {
+        return repo_.GetResults(start, max_items);
+    }
 
 private:
     void RestoreSession(serialization::SessionRepr& session_repr, std::vector<serialization::TokenRepr>& tokens);

@@ -51,6 +51,8 @@ add_executable(game_server
 	src/ConnectionPool.h
 	src/irepository.h
 	src/game_repository.h
+	src/utils.h
+	src/utils.cpp
 )
 
 target_link_libraries(game_server PRIVATE Threads::Threads CONAN_PKG::boost CONAN_PKG::libpq CONAN_PKG::libpqxx)

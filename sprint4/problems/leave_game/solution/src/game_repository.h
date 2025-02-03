@@ -2,6 +2,8 @@
 
 #include "irepository.h"
 #include "ConnectionPool.h"
+#include <pqxx/result>
+#include <boost/json.hpp>
 
 using pqxx::operator""_zv;
 
@@ -33,10 +35,20 @@ public:
         )"_zv, dog.GetName(), dog.GetScore(), dog.GetTotalSeconds());
         work.commit();
     }
-    std::string GetResults(){
-        std::string results;
-
-        return results;
+    std::string GetResults(int start, int32_t max_items){
+        boost::json::array jrows;
+        ConnectionPool::ConnectionWrapper conn = pool_.GetConnection();
+        pqxx::read_transaction r(*conn);
+        auto result = r.exec_params("SELECT name, score, total_seconds FROM retired_players ORDER BY score DESC, total_seconds, name OFFSET %1 limit %2"_zv
+            , start, max_items);
+        for( auto row : result) {
+            boost::json::object jrow;
+            jrow["name"] = row[0].as<std::string>();
+            jrow["score"] = row[1].as<int>();
+            jrow["total_seconds"] = row[2].as<int>();
+            jrows.push_back(jrow);
+        }
+        return boost::json::serialize(jrows);
     }
     ~GameRepository() {}
 private:

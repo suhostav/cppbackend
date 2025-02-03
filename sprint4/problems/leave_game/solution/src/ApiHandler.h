@@ -7,6 +7,7 @@
 #include "handlers_tools.h"
 #include "Dog.h"
 #include "GameApp.h"
+#include "utils.h"
 
 namespace http_handler {
 
@@ -67,6 +68,7 @@ private:
     std::string StateResponse(const model::GameSession* session) const;
     std::string ActionResponse(const StringRequest& req) const;
     std::string TickResponse(const StringRequest& req) const;
+    std::string RecordsResponse(const std::string& params) const;
 
     app::GameApp& game_app_;
     bool test_mode_;
