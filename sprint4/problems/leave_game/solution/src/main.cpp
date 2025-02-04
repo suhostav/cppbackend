@@ -130,7 +130,7 @@ int main(int argc, const char* argv[]) {
     InitLog();
     Args args{.tick_period = 0, .random_pos = false, .save_file = "", .save_period = 0};
     if(argc == 1){
-        args.config = "../data/config.json";
+        args.config = "../../data/config.json";
         args.root_dir = "../../static";
         args.tick_period = 50;
         args.save_file = "../../volume/saved_data.txt";

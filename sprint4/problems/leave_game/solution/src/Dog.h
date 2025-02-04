@@ -111,8 +111,8 @@ public:
     const std::chrono::milliseconds& GetTotalTime() const {
         return total_time_;
     }
-    int GetTotalSeconds() const {
-        return duration_cast<std::chrono::seconds>(total_time_).count();
+    int GetTotalTimeInt() const {
+        return total_time_.count();
     }
     void SetStopPeriod(std::chrono::milliseconds stop_period){
         stop_period_ = stop_period;

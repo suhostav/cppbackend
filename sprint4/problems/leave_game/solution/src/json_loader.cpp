@@ -39,7 +39,7 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
         game.SetLootProbability(jloots.at("probability").as_double());
     }
     if(data_object.contains("dogRetirementTime"s)){
-        game.SetDogRetirementTime(data_object.at("dogRetirementTime"s).as_int64());
+        game.SetDogRetirementTime(static_cast<int64_t>(data_object.at("dogRetirementTime"s).as_double()));
     }
     if(!data_object.contains("maps"s)){
         std::cout << "Error reading config\n";
