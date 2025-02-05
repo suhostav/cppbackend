@@ -176,7 +176,7 @@ bool View::ShowBook(std::istream& cmd_input) const {
         std::getline(input_, ind_str);
         boost::algorithm::trim(ind_str);
         if(ind_str.empty() || !isdigit(ind_str[0])){
-            return false;
+            return true;
         }
         ind = std::atoi(ind_str.c_str()) - 1;
     }
@@ -208,7 +208,7 @@ bool View::DeleteBook(std::istream& cmd_input) const {
         std::getline(input_, ind_str);
         boost::algorithm::trim(ind_str);
         if(ind_str.empty() || !isdigit(ind_str[0])){
-            output_ << "Failed to delete book\n";
+            // output_ << "Failed to delete book\n";
             return true;
         }
         ind = std::atoi(ind_str.c_str()) - 1;
@@ -217,7 +217,7 @@ bool View::DeleteBook(std::istream& cmd_input) const {
     try{
         use_cases_.DeleteBook(book.id);
     } catch(...){
-        output_ << "Failed to delete book\n";
+        // output_ << "Failed to delete book\n";
     }
     return true;
 }
@@ -277,7 +277,7 @@ bool View::ShowAuthorBooks() const {
             PrintVector(output_, GetAuthorBooks(*author_id));
         }
     } catch (const std::exception&) {
-        throw std::runtime_error("Failed to Show Books");
+        // throw std::runtime_error("Failed to Show Books");
     }
     return true;
 }
