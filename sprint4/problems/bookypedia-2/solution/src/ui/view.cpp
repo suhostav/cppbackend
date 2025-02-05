@@ -217,6 +217,7 @@ bool View::DeleteBook(std::istream& cmd_input) const {
 bool View::EditBook(std::istream& cmd_input) const{
     std::string title;
     std::getline(cmd_input, title);
+    boost::algorithm::trim(title);
     auto books = GetBooks(title);
     size_t ind = 0;
     if(books.size() == 0){
@@ -232,13 +233,13 @@ bool View::EditBook(std::istream& cmd_input) const{
         if(ind_str.empty() || !isdigit(ind_str[0])){
             return true;
         }
-        ind = std::atoi(ind_str.c_str());
+        ind = std::atoi(ind_str.c_str()) - 1;
     }
-    if(ind == 0 || ind >= books.size()){
+    if(ind >= books.size()){
         output_ <<"Book not found\n";
         return true;
     }
-    auto book = books[ind - 1];
+    auto book = books[ind];
     output_ << "Enter new title or empty line to use the current one (" << book.title << "):\n";
     std::string new_title;
     std::getline(input_, new_title);
@@ -251,9 +252,6 @@ bool View::EditBook(std::istream& cmd_input) const{
     boost::algorithm::trim(new_year);
     if(!new_year.empty() || isdigit(new_year[0])){
         book.year = new_year;
-    } else {
-        output_ <<"Book not found\n";
-        return true;
     }
     output_ << "Enter tags (current tags: " << util::Join(book.tags, ", ")<< "):\n";
     std::string new_tags;
