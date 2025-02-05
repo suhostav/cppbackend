@@ -125,7 +125,7 @@ std::optional<domain::Author> AuthorRepositoryImpl::GetAuthorByName(const std::s
     }
     util::detail::UUIDType uuid = util::detail::UUIDFromString(result[0][0].view());
     domain::AuthorId id(uuid);
-    std::string name_str{result[0][1].view()};
+    std::string name_str{name};
     return domain::Author(id, name_str);
 }
 
@@ -201,7 +201,7 @@ std::vector<domain::BookRepr> BookRepositoryImpl::GetAuthorBooks(const std::stri
             for (auto const &field: row) {
                 fields[i++] = field.c_str();
             }
-            books.emplace_back(fields[0], fields[1]);
+            books.emplace_back("", fields[0], fields[1]);
         }
     } catch(std::exception& e){
         std::cerr << e.what() << std::endl;

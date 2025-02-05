@@ -106,7 +106,7 @@ bool View::EditAuthor(std::istream& cmd_input) const {
     if(name.empty()){
         aid_str = SelectAuthorFromList();
         if(aid_str.empty()){
-            return false;
+            return true;
         }  
     } else {
         auto author_opt = use_cases_.GetAuthorByName(name);
@@ -172,11 +172,15 @@ bool View::ShowBook(std::istream& cmd_input) const {
         }
         ind = std::atoi(ind_str.c_str()) - 1;
     }
-    auto& book = books[ind];
-    output_ << "Title: " << book.title << std::endl;
-    output_ << "Author: " << book.author_name << std::endl;
-    output_ << "Publication year: " << book.year << std::endl;
-    output_ << "Tags: " << util::Join(book.tags, ", ") << std::endl;
+    if(ind < books.size()){
+        auto& book = books[ind];
+        output_ << "Title: " << book.title << std::endl;
+        output_ << "Author: " << book.author_name << std::endl;
+        output_ << "Publication year: " << book.year << std::endl;
+        if(!book.tags.empty()) {
+            output_ << "Tags: " << util::Join(book.tags, ", ") << std::endl;
+        }
+    }
     return true;
 }
 
@@ -196,7 +200,8 @@ bool View::DeleteBook(std::istream& cmd_input) const {
         std::getline(input_, ind_str);
         boost::algorithm::trim(ind_str);
         if(ind_str.empty() || !isdigit(ind_str[0])){
-            return false;
+            output_ << "Failed to delete book\n";
+            return true;
         }
         ind = std::atoi(ind_str.c_str()) - 1;
     }
@@ -227,9 +232,13 @@ bool View::EditBook(std::istream& cmd_input) const{
         if(ind_str.empty() || !isdigit(ind_str[0])){
             return true;
         }
-        ind = std::atoi(ind_str.c_str()) - 1;
+        ind = std::atoi(ind_str.c_str());
     }
-    auto book = books[ind];
+    if(ind == 0 || ind >= books.size()){
+        output_ <<"Book not found\n";
+        return true;
+    }
+    auto book = books[ind - 1];
     output_ << "Enter new title or empty line to use the current one (" << book.title << "):\n";
     std::string new_title;
     std::getline(input_, new_title);
@@ -242,6 +251,9 @@ bool View::EditBook(std::istream& cmd_input) const{
     boost::algorithm::trim(new_year);
     if(!new_year.empty() || isdigit(new_year[0])){
         book.year = new_year;
+    } else {
+        output_ <<"Book not found\n";
+        return true;
     }
     output_ << "Enter tags (current tags: " << util::Join(book.tags, ", ")<< "):\n";
     std::string new_tags;
@@ -355,8 +367,12 @@ std::string View::SelectAuthorFromList() const{
         }
         int author_idx;
         try {
-            author_idx = std::stoi(str);
-        } catch (std::exception const&) {
+            if(!str.empty() && isdigit(str[0])){
+                author_idx = std::stoi(str);
+            } else {
+                throw std::runtime_error("Failed to edit author");
+            }
+        } catch (const std::exception&) {
             throw std::runtime_error("Failed to edit author");
         }
 
