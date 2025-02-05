@@ -93,7 +93,7 @@ bool View::DeleteAuthor(std::istream& cmd_input) const {
         }
         use_cases_.DeleteAuthor(std::move(aid_str));
     } catch (const std::exception&) {
-        output_ << "Failed to delete author\n"sv << std::endl;
+        // output_ << "Failed to delete author\n"sv << std::endl;
     }
     return true;
 }
@@ -120,10 +120,13 @@ bool View::EditAuthor(std::istream& cmd_input) const {
     output_ << "Enter new name:"s << std::endl;
     std::string new_name;
     std::getline(input_, new_name);
+    if(new_name.empty()){
+        return true;
+    }
     try{
     use_cases_.RenameAuthor(aid_str, new_name);
     } catch(...){
-        output_ << "Failed to edit author\n"s;
+        // output_ << "Failed to edit author\n"s;
     }
     return true;
 }
