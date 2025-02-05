@@ -23,7 +23,11 @@ std::ostream& operator<<(std::ostream& out, const AuthorInfo& author) {
 }  // namespace detail
 
 std::ostream& operator<<(std::ostream& out, const domain::BookRepr& book) {
-    out << book.title << " by " << book.author_name << ", " << book.year;
+    if(book.author_name.empty()){
+        out << book.title << ", " << book.year;
+    } else {
+        out << book.title << " by " << book.author_name << ", " << book.year;
+    }
     return out;
 }
 
@@ -106,6 +110,7 @@ bool View::EditAuthor(std::istream& cmd_input) const {
     if(name.empty()){
         aid_str = SelectAuthorFromList();
         if(aid_str.empty()){
+            output_ << "Failed to edit author\n"s;
             return true;
         }  
     } else {
@@ -126,7 +131,7 @@ bool View::EditAuthor(std::istream& cmd_input) const {
     try{
     use_cases_.RenameAuthor(aid_str, new_name);
     } catch(...){
-        // output_ << "Failed to edit author\n"s;
+        output_ << "Failed to edit author\n"s;
     }
     return true;
 }
@@ -164,7 +169,7 @@ bool View::ShowBook(std::istream& cmd_input) const {
     if(books.size() == 0){
         return true;
     }
-    if(books.size() > 1){
+    if((title.empty() && books.size() > 0) || books.size() > 1){
         PrintVector(output_, books);
         output_ << "Enter the book # or empty line to cancel:\n";
         std::string ind_str;
@@ -193,10 +198,10 @@ bool View::DeleteBook(std::istream& cmd_input) const {
     auto books = GetBooks(title);
     size_t ind = 0;
     if(books.size() == 0){
-        output_ << "Failed to delete book\n";
+        output_ << "Book not found\n";
         return true;
     }
-    if(books.size() > 1){
+    if(title.empty() && books.size() > 0){
         PrintVector(output_, books);
         output_ << "Enter the book # or empty line to cancel:\n";
         std::string ind_str;
@@ -227,13 +232,14 @@ bool View::EditBook(std::istream& cmd_input) const{
         output_ <<"Book not found\n";
         return true;
     }
-    if(books.size() > 1){
+    if((title.empty() && books.size() > 0) || books.size() > 1){
         PrintVector(output_, books);
         output_ << "Enter the book # or empty line to cancel:\n";
         std::string ind_str;
         std::getline(input_, ind_str);
         boost::algorithm::trim(ind_str);
         if(ind_str.empty() || !isdigit(ind_str[0])){
+            output_ <<"Book not found\n";
             return true;
         }
         ind = std::atoi(ind_str.c_str()) - 1;
@@ -319,6 +325,7 @@ std::optional<std::string> View::SelectAuthor() const {
 
         std::string str;
         if (!std::getline(input_, str) || str.empty()) {
+            output_ << "Failed to add book\n";
             return std::nullopt;
         }
         int author_idx;
@@ -336,26 +343,6 @@ std::optional<std::string> View::SelectAuthor() const {
     }
 
 }
-
-// std::optional<domain::BookRepr> View::SelectBook(std::string_view param) const{
-//     auto books = GetBooks2(title);
-//     if(books.size() == 0){
-//         return {}};
-//     }
-//     size_t ind = 0;
-//     if(books.size() > 1){
-//         PrintVector(output_, books);
-//         std::string inp;
-//         output_ << "Enter the book # or empty line to cancel:\n";
-//         std::getline(input_, inp);
-//         boost::algorithm::trim(inp);
-//         if(inp,empty() || !isdigit(inp[0])){
-//             return {};
-//         }
-//         ind = std::atoi(inp);
-//     }
-
-// }
 
 std::string View::SelectAuthorFromList() const{
     auto authors = GetAuthors();
