@@ -46,10 +46,16 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
         return game;
     }
     auto jmaps = data_object.at("maps").as_array();
+
+    LoadMaps(game, jmaps, default_speed, default_bag_capacity);
+
+    return game;
+}
+
+void LoadMaps(model::Game& game, const boost::json::array& jmaps, double default_speed, int default_bag_capacity) {
     for(auto jmap : jmaps){
         model::Map::Id id{std::string{jmap.at("id").as_string()}};
         std::string name{jmap.at("name"s).as_string()};
-        auto jroads = jmap.at("roads").as_array();
         double map_speed = default_speed;
         if(jmap.as_object().contains("dogSpeed"s)){
             map_speed = jmap.at("dogSpeed"s).as_double();
@@ -61,44 +67,62 @@ model::Game LoadGame(const std::filesystem::path& json_path) {
 
         model::Map map{id, name, map_speed, bag_capacity};
 
-        for(const auto& jroad : jroads){
-            if(jroad.as_object().contains("x1")){
-                map.AddRoad(model::Road{model::Road::HORIZONTAL, 
-                    {to_int(jroad.at("x0").as_int64()), to_int(jroad.at("y0").as_int64())}, 
-                    to_int(jroad.at("x1").as_int64())});
-            } else {
-                map.AddRoad(model::Road{model::Road::VERTICAL, 
-                    {to_int(jroad.at("x0").as_int64()), to_int(jroad.at("y0").as_int64())}, 
-                    to_int(jroad.at("y1").as_int64())});
-            }
-        }
+        auto jroads = jmap.at("roads").as_array();
+        LoadRoads(map, jroads);
+
         auto jbuildings = jmap.at("buildings").as_array();
-        for(const auto& jbuilding : jbuildings){
-            map.AddBuilding(model::Building{model::Rectangle{{to_int(jbuilding.at("x").as_int64()), to_int(jbuilding.at("y").as_int64())},
-                {to_int(jbuilding.at("w").as_int64()), to_int(jbuilding.at("h").as_int64())}}});
-        }
+        LoadBuildings(map, jbuildings);
+
         auto joffices = jmap.at("offices").as_array();
-        for(const auto& joffice : joffices){
-            model::Office::Id id{std::string{joffice.at("id").as_string()}};
-            map.AddOffice(model::Office{
-                id,
-                {to_int(joffice.at("x").as_int64()), to_int(joffice.at("y").as_int64())},
-                {to_int(joffice.at("offsetX").as_int64()), to_int(joffice.at("offsetY").as_int64())}
-            });
-        }
+        LoadOffices(map, joffices);
+
         if(jmap.as_object().contains("lootTypes")) {
             boost::json::array jloot_types = jmap.at("lootTypes").as_array();
-            std::vector<model::LootType> loot_types;
-            for(const auto& jloot_type : jloot_types){
-                if(jloot_type.as_object().contains("value")) {
-                    loot_types.push_back(model::LootType{.value = static_cast<int>(jloot_type.at("value").as_int64())});
-                }
-            }
-            map.AddLootType(boost::json::serialize(jloot_types), std::move(loot_types));
         }
         game.AddMap(map);
     }
-    return game;
+}
+
+void LoadRoads(model::Map& map, const boost::json::array& jroads){
+    for(const auto& jroad : jroads){
+        if(jroad.as_object().contains("x1")){
+            map.AddRoad(model::Road{model::Road::HORIZONTAL, 
+                {to_int(jroad.at("x0").as_int64()), to_int(jroad.at("y0").as_int64())}, 
+                to_int(jroad.at("x1").as_int64())});
+        } else {
+            map.AddRoad(model::Road{model::Road::VERTICAL, 
+                {to_int(jroad.at("x0").as_int64()), to_int(jroad.at("y0").as_int64())}, 
+                to_int(jroad.at("y1").as_int64())});
+        }
+    }
+}
+
+void LoadBuildings(model::Map& map, const boost::json::array& jbuildings){
+    for(const auto& jbuilding : jbuildings){
+        map.AddBuilding(model::Building{model::Rectangle{{to_int(jbuilding.at("x").as_int64()), to_int(jbuilding.at("y").as_int64())},
+            {to_int(jbuilding.at("w").as_int64()), to_int(jbuilding.at("h").as_int64())}}});
+    }
+}
+
+void LoadOffices(model::Map& map, const boost::json::array& joffices){
+for(const auto& joffice : joffices){
+    model::Office::Id id{std::string{joffice.at("id").as_string()}};
+    map.AddOffice(model::Office{
+        id,
+        {to_int(joffice.at("x").as_int64()), to_int(joffice.at("y").as_int64())},
+        {to_int(joffice.at("offsetX").as_int64()), to_int(joffice.at("offsetY").as_int64())}
+    });
+    }
+}
+
+void LoadLootTypes(model::Map& map, const boost::json::array& jloot_types){
+    std::vector<model::LootType> loot_types;
+    for(const auto& jloot_type : jloot_types){
+        if(jloot_type.as_object().contains("value")) {
+            loot_types.push_back(model::LootType{.value = static_cast<int>(jloot_type.at("value").as_int64())});
+        }
+    }
+    map.AddLootType(boost::json::serialize(jloot_types), std::move(loot_types));
 }
 
 

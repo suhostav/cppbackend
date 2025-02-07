@@ -10,9 +10,8 @@ void Dog::Move(std::chrono::milliseconds period){
     if(speed_.hs == 0.0 && speed_.vs == 0.0){
         stop_period_ += period;
         if(IsRetire()) {
-            //TODO - emit signal
+            return;
         }
-        return;
     }
     double seconds = static_cast<double>(period.count()) / 1000.;
     prev_point_ = point_;

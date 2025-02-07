@@ -85,21 +85,16 @@ void GameApp::SetPlayerSpeed(Token token, model::GameSession* session, char dir)
             boost::archive::text_oarchive oa{out};
             std::vector<serialization::SessionRepr> srs;
             for(auto session : sessions_){
-                // std::cout << "Saving session: " << session << std::endl;
                 srs.emplace_back(*session);
             }
-            // std::cout << "Start saving ...\n";
             oa << srs;
-            // std::cout << "sessions serialized.\n";
             std::vector<serialization::TokenRepr>tokens;
             for(const auto& tk : player_tokens_.GetAllTokens()){
                 tokens.push_back({tk.first, tk.second});
             }
             oa << tokens;
-            // std::cout << "Start tokens serializing...\n";
             out.close();
             std::filesystem::rename(tmp_save_file_,save_file_);
-            // std::cout << "Saved!\n";
         }catch(std::exception& ex){
             err_msg = ex.what();
             return false;

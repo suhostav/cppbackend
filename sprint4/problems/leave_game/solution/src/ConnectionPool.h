@@ -55,7 +55,6 @@ public:
 private:
     void ReturnConnection(ConnectionPtr&& conn){
         std::lock_guard lock{mutex_};
-        assert(used_connections_ != 0);
         pool_[--used_connections_] = std::move(conn);
     }
     std::mutex mutex_;

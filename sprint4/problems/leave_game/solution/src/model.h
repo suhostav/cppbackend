@@ -363,7 +363,7 @@ public:
     }
     Map* GetMap(const std::string& map_id_str);
     JoinResult JoinGame(std::string_view dog_name, std::string_view map_id_str);
-    GameSession* CreateSession(std::string map_id_str);
+    GameSession* CreateSession(const std::string& map_id_str);
     void SetLootPeriod(double p){
         loot_period_ = std::chrono::duration_cast<std::chrono::milliseconds>(1ms * static_cast<int>(p * 1000));
     }

@@ -15,7 +15,6 @@ namespace http_server {
             {"text"s, ec.message()},
             {"what", what}};
         BOOST_LOG_TRIVIAL(info) << logging::add_value(additional_data, error_data) << "error"sv;
-        // std::cerr << what << ": "sv << ec.message() << std::endl;
 }
 
 void SessionBase::Run(){

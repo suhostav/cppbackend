@@ -201,7 +201,6 @@ geom::Point2D Map::GetRandomPoint(std::random_device& rd) const{
     std::uniform_int_distribution<std::mt19937_64::result_type> dist_length(0, std::abs(length) * 100);
     DCoord road_shift = static_cast<double>(dist_length(rd));
     road_shift = road_shift / 100. * sign;
-    // std::cout << "road number: " << road_index << ", length: " << length << ", shift: " << road_shift << std::endl;
     road_point = road.IsVertical() ? geom::Point2D{(double)road.GetStart().x, (double)road.GetStart().y + road_shift}
         : geom::Point2D{(double)road.GetStart().x + road_shift, (double)road.GetStart().y};
 
@@ -386,8 +385,8 @@ JoinResult Game::JoinGame(std::string_view dog_name, std::string_view map_id_str
     return {join_session->AddDog(std::string(dog_name)), join_session};
 }
 
-GameSession* Game::CreateSession(std::string map_id_str){
-    Map::Id map_id{std::string(map_id_str)};
+GameSession* Game::CreateSession(const std::string& map_id_str){
+    Map::Id map_id{map_id_str};
     size_t map_index = GetMapIndex(map_id);
     std::deque<GameSession>& map_sessions = maps_sessions_[map_index];
     GameSession* session = &map_sessions.emplace_back(&maps_[map_index], random_point_, GetLootPeriod(), GetLootProbability(), 1s * dog_retirement_time);
