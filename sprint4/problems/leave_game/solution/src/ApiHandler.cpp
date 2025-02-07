@@ -214,7 +214,7 @@ std::optional<app::Token> ApiHandler::TryExtractToken(const StringRequest& req) 
         return {};
     }
     for(auto tc : token_sv){
-        char c = (char)tolower(tc);
+        char c = static_cast<char>(tolower(tc));
         if(isdigit(c) || (c >= 'a' && c <= 'f')){
             token_str += c;
         } else {
