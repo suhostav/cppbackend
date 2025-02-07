@@ -110,7 +110,7 @@ bool View::EditAuthor(std::istream& cmd_input) const {
     if(name.empty()){
         aid_str = SelectAuthorFromList();
         if(aid_str.empty()){
-            output_ << "Failed to edit author\n"s;
+            // output_ << "Failed to edit author\n"s;
             return true;
         }  
     } else {
@@ -125,6 +125,7 @@ bool View::EditAuthor(std::istream& cmd_input) const {
     output_ << "Enter new name:"s << std::endl;
     std::string new_name;
     std::getline(input_, new_name);
+    boost::algorithm::trim(new_name);
     if(new_name.empty()){
         return true;
     }
@@ -143,6 +144,7 @@ bool View::AddBook(std::istream& cmd_input) const {
             output_ << "Enter tags (comma separated):\n";
             std::getline(input_, tag_str);
             std::vector<std::string> tags = util::PrepareTags(tag_str);
+            boost::algorithm::trim(params->title);
             use_cases_.AddBook(params->publication_year, params->title, params->author_id, tags);
         }
     } catch (const std::exception&) {
@@ -164,6 +166,7 @@ bool View::ShowBooks() const {
 bool View::ShowBook(std::istream& cmd_input) const {
     std::string title;
     std::getline(cmd_input, title);
+    boost::algorithm::trim(title);
     auto books = GetBooks(title);
     size_t ind = 0;
     if(books.size() == 0){
@@ -345,30 +348,35 @@ std::optional<std::string> View::SelectAuthor() const {
 }
 
 std::string View::SelectAuthorFromList() const{
+    static std::string empty_str{};
     auto authors = GetAuthors();
-        PrintVector(output_, authors);
-        output_ << "Enter author # or empty line to cancel" << std::endl;
+    if(authors.empty()) {
+        return empty_str;
+    }
+    output_ << "Select author:\n";
+    PrintVector(output_, authors);
+    output_ << "Enter author # or empty line to cancel" << std::endl;
 
-        std::string str;
-        if (!std::getline(input_, str) || str.empty()) {
-            return {};
-        }
-        int author_idx;
-        try {
-            if(!str.empty() && isdigit(str[0])){
-                author_idx = std::stoi(str);
-            } else {
-                throw std::runtime_error("Failed to edit author");
-            }
-        } catch (const std::exception&) {
+    std::string str;
+    if (!std::getline(input_, str) || str.empty()) {
+        return {};
+    }
+    int author_idx;
+    try {
+        if(!str.empty() && isdigit(str[0])){
+            author_idx = std::stoi(str);
+        } else {
             throw std::runtime_error("Failed to edit author");
         }
+    } catch (const std::exception&) {
+        throw std::runtime_error("Failed to edit author");
+    }
 
-        --author_idx;
-        if (author_idx < 0 or author_idx >= authors.size()) {
-            throw std::runtime_error("Failed to edit author");
-        }
-        return authors[author_idx].id;
+    --author_idx;
+    if (author_idx < 0 or author_idx >= authors.size()) {
+        throw std::runtime_error("Failed to edit author");
+    }
+    return authors[author_idx].id;
 }
 
 std::vector<detail::AuthorInfo> View::GetAuthors() const {

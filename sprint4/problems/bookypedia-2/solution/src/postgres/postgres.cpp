@@ -21,7 +21,7 @@ std::string AuthorRepositoryImpl::Save(const domain::Author& author) {
     pqxx::work& work{*work_};
     auto result = work.exec_params(
         R"(
-INSERT INTO authors (id, name) VALUES ($1, $2)
+INSERT INTO authors (id, name) VALUES ($1,$2)
 ON CONFLICT (id) DO UPDATE SET name=$2;
 )"_zv,
         author.GetId().ToString(), author.GetName());
